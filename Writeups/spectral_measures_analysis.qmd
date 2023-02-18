@@ -1,0 +1,211 @@
+---
+title: "Selected Recordings Spectral Measures"
+format: html
+execute:
+  warning: false
+knitr:
+  opts_chunk:
+    message: false
+---
+
+```{r}
+library(rPraat)     # Load Praat-related files
+library(tidyverse)  # Tidy Functionality
+library(sosprosody) # Helper functions for prosody research
+library(furrr)      # Parallelization for loading files
+library(targets)    # For targets integration
+library(forecast)   # Helps with pitch tracking errors
+source("Helpers/EDA_helpers.R") # Helper functions not general enough for {sosprosody}
+has_run <- tar_read('get_all_spectral_measures')
+
+two_syl_words <- c("grandma", "branning", "bronville", "greenview", "broadway")
+three_syl_words <- c("grandmother",
+                     "maryland",
+                     "weatherman",
+                     "evansville",
+                     "middleman",
+                     "governor",
+                     "manager",
+                     "northerner",
+                     "weaverville")
+nuclear_words <- c(two_syl_words, three_syl_words)
+
+tune_order <- c("LHH","HHH","HLL","LHSLL","LSHLL")
+
+spectral_measures <- 
+  read_csv("02_PossibleRecordings/SpectralMeasuresTextgrids/spectral_measures.txt") |> 
+  rename(file = Filename,
+         utterance = var1,
+         session = var2,
+         tune = var3,
+         take = var4) |> 
+  mutate(wordset = ifelse(utterance %in% two_syl_words, "syl2", "syl3"),
+         session_id = paste(wordset, session, sep =".")) |> 
+  filter(f0 > 0, f0 < 200) |> 
+    time_normalize(.from = "t_ms") |> 
+  running_median_smooth(.k = 5, .from = "f0", .to  = "runmed_f0")
+
+spectral_measures_by_session <- split(spectral_measures, ~wordset)
+```
+
+
+
+```{r}
+#| fig-cap: "Time-normalized F0 trajectories for nuclear region of selected files with 5 point running median smoothing. Smoothed trajectory is shown in blue with LOESS smoothing."
+spectral_measures |>
+  ggplot(aes(x = timepoint_norm, y = f0, group = file)) +
+  geom_line() +
+  facet_grid(tune ~ wordset) +
+  geom_smooth(aes(group = NA)) +
+  theme_bw() +
+  coord_fixed(ratio = 1/200) +
+  NULL
+```
+
+
+```{r}
+#| echo: false
+from_var <- "CPP"
+cur_session <- "syl3"
+```
+
+```{r, plot-spectral-measure}
+#| eval: false
+#| echo: false
+to_var <- paste0("runmed_",from_var)
+spectral_measure_data <- 
+  spectral_measures_by_session[[cur_session]] |> 
+  group_by(file) |> 
+  filter(f0 > 0) |> 
+  running_median_smooth(.k = 9, 
+                        .from = from_var, 
+                        .to = to_var)
+
+spectral_measure_data |> 
+  ggplot(aes(x = timepoint_norm, y = !!sym(to_var), group = file)) +
+  geom_line(data = dplyr::select(spectral_measure_data,
+                                   -utterance),
+              color = 'firebrick',
+            alpha = .1) +
+  geom_line(color = 'dodgerblue4',
+            alpha = .3) +
+  facet_grid(utterance~tune) +
+  stat_smooth(data = dplyr::select(spectral_measure_data,
+                                   -utterance), 
+              aes(group = tune), 
+              color = 'red') +
+  stat_smooth(aes(group = NA)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  NULL
+
+spectral_measures |> 
+  group_by(file) |> 
+  filter(f0 > 0) |> 
+  running_median_smooth(.k = 9, 
+                        .from = from_var, 
+                        .to = to_var) |> 
+  ggplot(aes(x = timepoint_norm, y = !!sym(to_var), group = file)) +
+  geom_line(alpha = .1) +
+  geom_smooth(aes(group = NA)) +
+  theme_bw() +
+  facet_grid(tune ~ wordset)
+```
+
+Breathy: High H1-H2*, Low CPP
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-H2* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1H2c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-A2* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1A2c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-A3* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1A3c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Cepstral Peak Prominence (CPP) trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "CPP"
+
+<<plot-spectral-measure>>
+```
+
+## Two syllables
+
+```{r}
+cur_session <- "syl2"
+```
+
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-H2* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1H2c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-A2* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1A2c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "H1-A3* trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "H1A3c"
+
+<<plot-spectral-measure>>
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Cepstral Peak Prominence (CPP) trajectories for selected recordings, sampled in 10ms intervals with 9-point median smoothing."
+#| column: page
+#| fig-width: 9
+#| fig-height: 8
+from_var <- "CPP"
+
+<<plot-spectral-measure>>
+```
+

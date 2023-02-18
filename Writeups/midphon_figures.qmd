@@ -1,0 +1,246 @@
+---
+title: "MidPhon Figures"
+format: html
+---
+
+```{r setup}
+#| warning: false
+library(rPraat)     # Load Praat-related files
+library(tidyverse)  # Tidy Functionality
+library(sosprosody) # Helper functions for prosody research
+library(furrr)      # Parallelization for loading files
+library(targets)    # For targets integration
+library(forecast)   # Helps with pitch tracking errors
+source("Helpers/EDA_helpers.R") # Helper functions not general enough for {sosprosody}
+
+# Directories to pitchtiers and textgrids
+ptdir <- r"(02_PossibleRecordings\PitchTiers\)"
+tgdir <- r"(02_PossibleRecordings\MFA_textgrids\)"
+```
+
+# Pitch tracks
+
+```{r item-char-vectors}
+#| echo: false
+two_syl_words <- c("grandma", "branning", "bronville", "greenview", "broadway")
+three_syl_words <- c("grandmother",
+                     "maryland",
+                     "weatherman",
+                     "evansville",
+                     "middleman",
+                     "governor",
+                     "manager",
+                     "northerner",
+                     "weaverville")
+nuclear_words <- c(two_syl_words, three_syl_words)
+
+tune_order <- c("LHH","HHH","HLL","LHSLL","LSHLL")
+```
+
+
+```{r load-files}
+#| message: false
+
+# Load textgrid
+textgrid_df <- 
+  tar_read("process_textgrids") |> 
+  mutate(is_nuclear = word_label %in% nuclear_words,
+         wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2")) 
+
+# Remove files that have different pronunciations, specifically when
+# "governor" is transcribed as "g0v_@_n@r" instead of "g0v_@r_n@r"
+files_to_omit <- tar_read('files_to_omit')
+textgrid_df <- 
+  textgrid_df |> 
+  filter(!file %in% files_to_omit$file)
+
+# Extract nuclear regions
+nuclear_regions <- get_nuclear_textgrids(textgrid_df, nuclear_words)
+
+# Load pitchtiers
+raw_pitchtier_df <- tar_read("process_pitchtiers")
+
+# Preprocess pitchtracks
+pitchtier_df <- 
+  raw_pitchtier_df  |> 
+  preprocess_pitchtracks(nuclear_regions, 
+                         runmed_k = 5, 
+                         time_normalize = TRUE,
+                         .fromzero = TRUE) |> 
+  mutate(tune = factor(tune, levels = tune_order),
+         wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2"))
+
+# Calculate average pitch contours for each tune-utterance pair
+avg_contour_df <- 
+  pitchtier_df |> 
+  # Fix coding issue with points outside of final boundary
+  mutate(is_nuclear = fix_OOB_nuclear_coding(is_nuclear),
+         tune = factor(tune, levels = tune_order),
+         wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2")) |>
+  average_pitchtracks(section_by = "is_nuclear",
+                      pulses_per_section = c("FALSE" = 15,
+                                             "TRUE" = 30),
+                      time_by = "timepoint_norm",
+                      aggregate_by = file ~ tune + wordset,
+                      parallelize = TRUE) |> 
+  # Smooth average points a little
+  running_median_smooth(.k = 5, 
+                        .from = "avg_hz",
+                        .to = "avg_hz_smooth",
+                        .group = c("tune", "wordset"))
+```
+
+```{r}
+# F0 contour plot
+plot_averaged_contours2 <- function(raw_pitchtier_df,
+                                    avg_pitchtier_df,
+                                    .x = "timepoint_norm",
+                                    .y = "hz_runmed",
+                                    .group = "file",
+                                    .color = "is_nuclear",
+                                    .yavg = "avg_hz_smooth",
+                                    .facet_by = utterance ~ tune) {
+  avg_pitchtier_df$shp <- ifelse(avg_pitchtier_df$is_nuclear == 'FALSE',
+                                 23, 21)
+  avg_pitchtier_df$fill <- ifelse(avg_pitchtier_df$is_nuclear == 'FALSE',
+                                  "skyblue1", "lightcoral")
+  avg_pitchtier_df$stripname <- ifelse(avg_pitchtier_df$wordset == "syl3",
+                                       "3 Syllables",
+                                       "2 Syllables")
+  raw_pitchtier_df$stripname <- ifelse(raw_pitchtier_df$wordset == "syl3",
+                                       "3 Syllables",
+                                       "2 Syllables")
+  ggplot(raw_pitchtier_df,
+         aes(x = !!sym(.x), 
+             y = !!sym(.y), 
+             group = !!sym(.group), 
+             color = !!sym(.color)
+         )) +
+    geom_line(size = 1,
+              alpha = .1) +
+    geom_point(data = avg_pitchtier_df,
+               aes(x = !!sym(.x), 
+                   y = !!sym(.yavg), 
+                   fill = I(fill),
+                   shape = I(shp)),
+               inherit.aes = FALSE,
+               # shape = 21,
+               size = 1,
+               color = 'black') +
+    facet_grid(.facet_by) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank()) +
+    scale_color_manual(values = c('dodgerblue4','firebrick')) +
+    scale_x_continuous(labels = c('0', '.25', '.5', '.75', '1')) +
+    theme(legend.position = "none") 
+}
+
+f0_plot <- 
+  plot_averaged_contours2(pitchtier_df,
+                                   avg_contour_df,
+                                   .x = 'timepoint_norm',
+                                   .yavg = "avg_hz",
+                                   .facet_by = tune ~ stripname) +
+  coord_fixed(ratio = 1/300) +
+  xlab("Normalized Time") +
+  ylab("Hz")
+
+ggsave("MidphonFigs/f0_plot.pdf",
+       f0_plot, 
+       device = "pdf",
+       width = unit(5, 'in'),
+       height = unit(5, 'in'))
+```
+
+# Spectral measures
+
+```{r}
+spectral_measures <- 
+  read_csv("FullSpectralMeasures/spectral_measures.txt") |> 
+  rename(file = Filename,
+         utterance = var1,
+         session = var2,
+         tune = var3,
+         take = var4) |> 
+  mutate(wordset = ifelse(utterance %in% two_syl_words, "syl2", "syl3"),
+         session_id = paste(wordset, session, sep =".")) |> 
+  filter(f0 > 0, f0 < 200) |> 
+  time_normalize(.from = "t_ms") |> 
+  running_median_smooth(.k = 5, .from = "f0", .to  = "runmed_f0")
+```
+
+
+```{r}
+#| echo: false
+from_var <- "CPP"
+cur_session <- "syl3"
+```
+
+```{r, plot-spectral-measure}
+#| echo: false
+to_var <- paste0("runmed_",from_var)
+
+plot_sm <- function(from_var) {
+  to_var <- paste0("runmed_",from_var)
+  spectral_measures |> 
+    mutate(wordset = ifelse(wordset == 'syl3', "3 Syllables", "2 Syllables")) |> 
+    group_by(file) |> 
+    filter(f0 > 0) |> 
+    running_median_smooth(.k = 9, 
+                          .from = from_var, 
+                          .to = to_var) |> 
+    ggplot(aes(x = timepoint_norm, y = !!sym(to_var), group = file)) +
+    geom_line(alpha = .1) +
+    geom_smooth(aes(group = NA), color = 'white', size = 2) +
+    geom_smooth(aes(group = NA), color = 'firebrick',se=TRUE) +
+    theme_bw() +
+    facet_grid(tune ~ wordset) +
+    theme(panel.grid.minor = element_blank())
+}
+```
+
+```{r}
+from_var <- "H1H2c"
+
+h1h2_plot <- 
+  plot_sm(from_var) +
+  xlab("Normalized Time") +
+  ylab("H1*-H2* (dB)")+
+  # coord_fixed(1/80)+ 
+  NULL
+```
+
+
+```{r}
+from_var <- "H1A3c"
+
+h1a3_plot <- 
+  plot_sm(from_var) +
+  xlab("Normalized Time") +
+  ylab("H1-A3* (dB)")+
+  # coord_fixed(1/120) +
+  NULL
+```
+
+
+```{r}
+from_var <- "CPP"
+
+cpp_plot <- 
+  plot_sm(from_var) +
+  xlab("Normalized Time") +
+  ylab("CPP (dB)")+
+  # coord_fixed(1/50)
+  NULL
+```
+
+```{r}
+library(patchwork)
+
+
+combined_plot <- h1h2_plot + cpp_plot
+
+ggsave("MidphonFigs/spectral_measures_plot.pdf", 
+       combined_plot, width = 12, height = 6,device = 'pdf')
+```
+

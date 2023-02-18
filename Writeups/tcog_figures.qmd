@@ -1,0 +1,118 @@
+---
+title: "TCoG Analysis"
+format: html
+knitr:
+  opts_chunk: 
+    message: false
+fig-format: svg
+params: 
+  exptag: "bottomoutBi"
+  nucpath: "06d_ResynthesizedRecordingsBottomoutBitonal/ConstantScaling_"
+  sf: [70, 100]
+---
+
+```{r setup}
+library(tidyverse)
+library(targets)
+library(sosprosody)
+library(rPraat)
+source("Helpers/tcog_helpers.R")
+source('Helpers/bezier_helpers.R')
+sf <- first(params$sf)
+remaining_sf <- params$sf[-1]
+exp_tag <- params$exptag
+tcog_ver <- 'raw'
+
+dep <-  tar_read(assemble_resyntheses)
+syl_specs <- tar_read(syllable_specification)
+three_syl_words <- tar_read(three_syl_words)
+```
+
+```{r set-paths}
+# Input paths for prepped pitch tiers and textgrids
+pt_path <- paste0("CalculatedFiles/", exp_tag, "_prepped_pt_", sf, ".RDS")
+tg_dir <- paste0(params$nucpath, sf, "/TextGrids")
+```
+
+```{r load-data}
+
+# Output path for calculated tcog measurements
+unweighted_tcogdf_path <- glue::glue("CalculatedFiles/tcog/{exp_tag}_unweighted_{sf}_tcog.rds")
+weighted_tcogdf_path <- glue::glue("CalculatedFiles/tcog/{exp_tag}_weighted_{sf}_tcog.rds")
+
+
+nucleus_times <- get_nucleus_times(tg_dir, syl_specs)
+unweighted_tcog <- tcog_from_prepped_regions(pt_path)
+weighted_tcog <- weighted_tcog_from_prepped_regions(pt_path, 
+                                                    nucleus_times,
+                                                    .override_sd = .25)
+
+saveRDS(unweighted_tcog, unweighted_tcogdf_path)
+saveRDS(weighted_tcog, weighted_tcogdf_path)
+```
+
+
+```{r plot-tcog}
+
+# Output path for figures
+unweighted_figpath <- glue::glue("Figures/tcog/{exp_tag}_unweighted_{sf}_{tcog_ver}.pdf")
+weighted_figpath <- glue::glue("Figures/tcog/{exp_tag}_weighted_{sf}_{tcog_ver}.pdf")
+
+
+unweighted_plot <- 
+  unweighted_tcog |> 
+  dplyr::filter(!utterance %in% three_syl_words) |> 
+  plot_recording_tcog(three_syl_words, 
+                      .which_tcog = tcog_ver)
+weighted_plot <- 
+  weighted_tcog |> 
+  dplyr::filter(!utterance %in% three_syl_words) |> 
+  plot_recording_tcog(three_syl_words, 
+                      .which_tcog = tcog_ver)
+
+ggsave(unweighted_figpath, unweighted_plot, device = 'pdf', 
+       height = 5, width = 6)
+
+ggsave(weighted_figpath, weighted_plot, device = 'pdf', 
+       height = 5, width = 6)
+```
+
+```{r unweighted-plot}
+#| fig-cap: "Unweighted TCoG values for each resynthesized recording. Closed circles denote Step 1 of the alignment continuum (=earliest) and closed triangle denotes Step 5 (=latest); open circles show intermediate steps. Color denotes boundary tone step, the bottom-most Red denotes Step 1 (=L-L%) and the top-most Orange denotes Step 5 (=H-H%); intermediate steps ascend monotonically."
+
+unweighted_plot
+```
+
+```{r weighted-plot}
+#| fig-cap: "Weighted TCoG values for each resynthesized recording. Weights are drawn from a Gaussian distribution centered on the midpoint of the stressed vowel with a standard deviation of 25% of the stressed syllable duration."
+
+weighted_plot
+```
+
+```{r}
+
+for (sf in params$sf) {
+<<set-paths>>
+<<load-data>>
+  
+  for (tcog_ver in c("raw", "centered", "semitone")) {
+    print(glue::glue("{tcog_ver} with sf={sf}"))
+<<plot-tcog>>
+<<unweighted-plot>>
+<<weighted-plot>>
+  }
+}
+```
+
+
+```{r plot-ideal-bezier-curves}
+if (exp_tag == "exp3curved") {
+  lhs_points <- tar_read(lhs_points)
+  lsh_points <- tar_read(lsh_points)
+  
+  bezier_plot <- plot_ideal_bezier_tcog(lhs_points, lsh_points)
+  
+  ggsave("Figures/ideal_bezier_curves.pdf", bezier_plot,
+         width = 6, height = 3)
+}
+```

@@ -1,0 +1,424 @@
+---
+title: "Stimulus Flowchart"
+format:
+  html:
+    page-layout: full
+    fig-responsive: false
+    fig-align: center
+toc: true
+code-tools: true
+editor: source
+---
+
+```{r}
+#| message: false
+#| warning: false
+library(rPraat)
+library(sosprosody)
+library(tidyverse)
+library(targets)
+```
+
+## Recording and Setup
+
+
+```{mermaid}
+flowchart TD
+classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
+classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
+%% Files to make
+TriggerScript[[trigger2tg.praat]]
+ExtractTakes[[extract_takes.praat]]
+MFA[[force_align.sh]]
+PitchTierScript[[gen_manips_pitchtier.praat]]
+
+class TriggerScript praat
+class ExtractTakes praat
+class MFA shell
+class PitchTierScript praat
+
+%% Define Directories
+RawRec["📂00: Recordings"]
+MonoRec["📂01: Mono Recordings"]
+PossibleRecs["📂02: Possible Recordings"]
+Textgrids["📂02a: Textgrids for Recordings"]
+PitchTiers["📂02b: PitchTiers for Recordings"]
+
+
+
+RawRec -- Extract mono channel --> TriggerScript --> MonoRec
+    MonoRec -- Annotate textgrid to denote OK takes --> ExtractTakes
+    ExtractTakes --> PossibleRecs
+    PossibleRecs --> MFA -- Standardized textgrid annotations --> Textgrids
+    PossibleRecs --> PitchTierScript --> PitchTiers
+    
+```
+
+
+This portion of the process has most of the manual labor.
+After the recordings are done, I use the `trigger2tg.praat` script to segment
+the individual target utterances, which contain ***many takes*** of the same sentence.
+Then, I listen to all the takes and denote which ones are OK enough to 
+possibly use later, which are marked on a TextGrid with the following format:[^tgformat]
+
+[^tgformat]: I wrote these custom print method for TextGrids and PitchTiers
+as part of the `sosprosody` package, available on my github at [tsostarics/sosprosody](https://github.com/tsostarics/sosprosody)
+
+```{r}
+tg.read("01_Mono/exp1_raw_3syl_01_HLL.TextGrid")
+```
+
+The `extract_takes.praat` script automatically extracts all of the takes
+annotated on the second tier above, saving separate `.wav` files and TextGrids.
+These textgrids have a single tier/interval containing the utterance, which
+is fed into the force alignment step.
+
+```{r}
+tg.read("02_PossibleRecordings/grandmother_01_LHH_001.TextGrid")
+```
+
+### Force-aligned TextGrids and PitchTiers
+
+The force alignment step uses the Montreal Force Aligner with the dictionary
+and acoustic model as specified in the commands below.
+Log files are saved for the validation and align procedures.
+Note that there's some new out of vocabular words that were added to the
+dictionary, see the `README` for details.
+
+```{r}
+read_lines(tar_read(force_align_script))
+```
+
+The resulting text grids have the following standardized format:
+
+```{r}
+tg.read("02_PossibleRecordings/MFA_textgrids/grandmother_01_LHH_001.TextGrid")
+```
+
+To make corresponding PitchTier files, the `gen_manips_pitchtier.praat` script
+is used. The pitchtiers look like this:
+
+```{r}
+pt.read("02_PossibleRecordings/PitchTiers/grandmother_01_LHH_001.PitchTier")
+```
+
+## Selecting recordings
+
+```{mermaid}
+%%| fig-align: center
+flowchart TD
+classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
+classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
+classDef excel fill:#17874E,stroke:#134130,color:#ffffff;
+
+RawEDA[[raw_recordings_eda.qmd]]
+SylHelper[[syllable_helpers.R]]
+SylSpecs[[syllabification.csv]]
+
+class RawEDA rstats
+class PromoScript python
+class GetDurTiers rstats
+class DurationScript praat
+class DurationScript2 praat
+class SylHelper rstats
+class TierHelper rstats
+class SylSpecs excel
+
+Textgrids["📂02a: Textgrids for Recordings"]
+PitchTiers["📂02b: PitchTiers for Recordings"]
+Picked["📂03: Chosen Recordings"]
+PickedTG["📂03a: Chosen TextGrids"]
+FixedTG["📂03b: Fixed TextGrids"]
+EDA(Summary statistics & EDA with raw files)
+%%    PlotHelpers --> RawEDA
+    Textgrids & PitchTiers  --> RawEDA --> EDA
+    EDA -- Match recordings, pick best exemplars --> Picked
+    Picked -.- PickedTG
+    SylSpecs & PickedTG --> SylHelper
+    SylHelper -- Add tiers, adjust boundaries --> FixedTG
+```
+
+
+The next part of the process has three contributions.
+First, we can get an exploratory look at the recordings to get an exploratory
+look at the distribution of recordings.
+Second, we can decide which recordings are the best exemplars to use for later
+steps of this process.
+Third, we use the results of the exploratory analysis to decide on the durations to use for standardizing the nuclear tune length.
+
+### Averaging process
+
+This flowchart expands on how the durations are calculated.
+This is done by first calculating the average duration for each utterance-tune pairing
+from all takes of that pairing.
+Second, we calculate the average duration of an utterance based on its average
+duration in each tune condition; this is done to avoid skewing averages towards
+a tune that had more recordings than the other tunes.
+Once we have the average durations for each utterance, we calculate how
+much each recording of that utterance would need to be scaled to reach the
+average duration.
+A file for each utterance-tune pairing is selected for further manipulation
+based on which take is closest (i.e., requires the least amount of scaling)
+to reach the target duration.
+
+The textgrids for these recordings (~64) are manually checked to verify the
+output of the MFA with particular attention for the boundaries of phones
+on a syllable or word boundary.
+These TextGrids have the following format, note the addition of nuclear
+and syllable interval tiers:
+
+
+```{r}
+tg.read("03_ChosenRecordings/FixedTextGrids/branning_01_HLL_002.TextGrid", 
+        'auto')
+```
+
+
+```{mermaid}
+flowchart LR
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+GetDurTiers[[make_duration_tiers.R]]
+class GetDurTiers rstats
+
+
+class PromoScript python
+    subgraph HLL[HLL Takes]
+        direction LR
+        HLL:1 -.- HLL:... -.- HLL:n
+    end
+    muHLL[HLL Average]
+    HLL --> muHLL
+    subgraph LHH[LHH Takes]
+        direction LR
+        LHH:1 -.- LHH:... -.- LHH:n
+    end
+    muLHH[LHH Average]
+    LHH --> muLHH
+    subgraph LHSLL[L+H*LL Takes]
+        direction LR
+        LHSLL:1 -.- LHSLL:... -.- LHSLL:n
+    end
+    muLHSLL[LHSLL Average]
+    LHSLL --> muLHSLL
+    subgraph LSHLL[L*+HLL Takes]
+        direction LR
+        LSHLL:1 -.- LSHLL:... -.- LSHLL:n
+    end
+    muLSHLL[LSHLL Average]
+    LSHLL --> muLSHLL
+    muHLL & muLHH & muLHSLL & muLSHLL --> average[Averaged Duration]
+    average --> GetDurTiers
+```
+
+
+## Duration manipulations
+
+```{mermaid}
+flowchart TD
+classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
+classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
+classDef excel fill:#17874E,stroke:#134130,color:#ffffff;
+
+DurationScript[[apply_dt_manipulation.praat]]
+DurationScript2[[apply_dt_manipulation.praat]]
+TierHelper[[tiermanip_helpers.R]]
+
+class RawEDA rstats
+class PromoScript python
+class GetDurTiers rstats
+class DurationScript praat
+class DurationScript2 praat
+class SylHelper rstats
+class TierHelper rstats
+class SylSpecs excel
+
+Picked["📂03: Chosen Recordings"]
+FixedTG["📂03b: Fixed TextGrids"]
+DurTiers["📂03c: Duration Tiers"]
+AvgFiles["📂04: Scaled Recordings"]
+DurTextGrids["📂04a: Duration-morphed TextGrids"]
+NudgedFiles["📂05: Nudged Recordings"]
+NudgedTextGrids["📂05b: Nudged TextGrids"]
+NudgedDurationTiers["📂05a: Nudged DurationTiers"]
+
+EDA(Summary statistics & EDA with raw files)
+%%    PlotHelpers --> RawEDA
+    FixedTG --> TierHelper
+    EDA -- Determine durations to use --> TierHelper
+    TierHelper --> DurTiers & DurTextGrids
+    DurTextGrids -.- AvgFiles 
+    DurTiers & Picked --> DurationScript --> AvgFiles
+    TierHelper --> NudgedDurationTiers
+    AvgFiles & NudgedDurationTiers -- Reduce final syllable duration --> DurationScript2
+    DurationScript2 --> NudgedFiles & NudgedTextGrids
+```
+
+
+Once the chosen recordings are selected and their textgrids checked, a second
+round of averaging on the syllable level is done.
+Here, the average duration of each syllable is calculated.
+This is done separately for two- and three-syllable word sets.
+These averages serve as target syllable durations for each word.
+Duration Tiers are written for each file to scale the duration of each syllable
+of the nuclear word to the target values.
+
+Duration Tiers technically have the same exact specification as Pitch Tiers,
+so I'll show an example of what these duration tiers look like by treating it
+as a Pitch Tier.
+The Y-axis isn't perfect because the range of the values is very small (both endpoints round to 1) but below you can see the two rows of points on the ends are at 1, but there's a region at 1.3 (appears as much higher) and a region at .94 (appears as slightly lower than 1).
+Thus, we see that for this recording, the first syllable needed to be stretched while the second syllable needed to be shrunk slightly.
+
+```{r}
+durationtier <- 
+  dt.read("03_ChosenRecordings/DurationTiers/branning_01_HLL_002.DurationTier")
+
+class(durationtier)['type'] <- "PitchTier"
+
+durationtier
+```
+
+So far we have standardized the duration of the syllables using manually
+calculated duration tiers given target values from the average durations across
+utterances.
+A second duration manipulation is also applied where the final syllable in each
+word is shrunk by a constant value, such as .80 or .90. 
+Because the syllables are already standardized, this value is applied in the
+same way to every file.
+This is done to correct for final lengthening that makes straight-line 
+interpolation between the pitch accent and boundary tone targets sound a bit off.
+The value to shrink by is largely arbitrary, and we try reducing the duration 
+of the final syllable in steps of 5%, from 100% (original duration) to 65% of
+the original duration.
+When listening to the final resynthesis, it seems like 85% or 80% works best.
+
+## Resynthesis
+
+```{mermaid}
+
+flowchart TB
+classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
+classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
+
+Exp1ResynthScript[[resynthesize_continua.praat]]
+Exp2ResynthScript[[resynthesize_continua_exp2.praat]]
+Exp3ResynthScript[[resynthesize_straight_alignment_continua.praat]]
+Exp3cResynthScript[[resynthesize_curved_alignment_continua.praat]]
+ResynthAnalysis[[resynthesis_analysis.qmd]]
+BezierHelpers[[bezier_helpers.R]]
+
+class Exp1ResynthScript praat
+class Exp2ResynthScript praat
+class Exp3ResynthScript praat
+class Exp3cResynthScript praat
+class ResynthAnalysis rstats
+class BezierHelpers rstats
+
+AvgFiles["📂05: Nudged Recordings"]
+Exp1Resynth["📂06: Exp1 Resynthesized Recordings"]
+Exp2Resynth["📂06b: Exp1 Resynthesized Recordings"]
+Exp3Resynth["📂06c: Exp1 Resynthesized Recordings"]
+Exp3cResynth["📂06cCurved: Exp1 Resynthesized Recordings"]
+FixedFiles["📂07: Manually fixed Recordings"]
+ 
+subgraph Resynthesis[Resynthesis]
+  direction LR
+  subgraph ResynthScripts[Resynthesis Scripts]
+    direction TB
+    Exp1ResynthScript ---
+      Exp2ResynthScript ---
+      Exp3ResynthScript ---
+      Exp3cResynthScript
+  end
+  subgraph ResynthFiles[Resynthesized Files]
+    direction TB
+    Exp1Resynth ---
+    Exp2Resynth ---
+    Exp3Resynth ---
+    Exp3cResynth
+  end
+  BezierHelpers -- Create curves --> ResynthScripts
+  ResynthScripts --> ResynthFiles
+end
+AvgFiles --> Resynthesis
+Resynthesis --> ResynthAnalysis
+ResynthAnalysis --> ResynthViz[Visualizations and Scripts for resynthesis debugging]
+ResynthViz -- Check for resynthesis errors --> FixedFiles
+```
+
+We can now resynthesize all of the averaged recordings.
+The `resynthesis_analysis.qmd` provides visualizations of the resynthesized
+files to double check that the resynthesis held. Sometimes rerunning the
+resynthesis on the file is good enough, but sometimes there's a voice quality
+issue at play.
+
+### Experiment 1
+
+This experiment uses the `Scripts/resynthesize_continua.praat` script, and
+the output is saved in `06_ResynthesizedRecordings`
+
+### Experiment 2
+
+This experiment uses the `Scripts/resynthesize_alignment_continua_exp2.praat`
+script, and the output is saved in `06b_ResynthesizedRecordingsExp2`. 
+
+### Experiment 3
+
+There are two versions: 
+
+ - `Scripts/resynthesize_straight_alignment_continua.praat` will give straight-line
+ interpolations for a continuum of bitonal pitch accents that differ in alignment.
+ Files saved in `06c_ResynthesizedRecordingsExp3`
+ - `Scripts/resynthesize_curved_alignment_continua.praat` uses bezier curves to create
+ curved interpolations for the onglides, but the trajectory from the peak to
+ the boundary tone is still a straight line. Files saved in 
+ `06c_ResynthesizedRecordingsExp3CURVED`
+
+## Final Normalization Procedures
+
+```{mermaid}
+flowchart TD
+classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
+classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
+classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
+classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
+
+SilenceNormScript[[norm_silence.praat]]
+RMSNormScript[[rms_norm.praat]]
+FinalEDA[[stimuli_analyses.qmd]]
+
+class SilenceNormScript praat
+class RMSNormScript praat
+class FinalEDA rstats
+
+FixedFiles["📂06: Manually fixed Recordings"]
+SilNormed["📂07: Silence Duration Normed Recordings"]
+FinalFiles["📂08: Final Recordings"]
+Cull["📂09: Culled Recordings"]
+
+FixedFiles -- Norm Silence Durations --> SilenceNormScript --> SilNormed
+    SilNormed -- RMS Norm  Intensity --> RMSNormScript --> FinalFiles
+    FinalFiles -- Choose subset of files --> Cull
+    FinalStats([Plots and Statistics of final stimuli])
+    Cull --> FinalEDA --> FinalStats
+```
+
+# Automation
+
+Anything that does not absolutely require human intervention, such as the textgrid annotation at the very beginning, is automated.
+This includes running praat scripts, making duration calculations, and running analyses (after they're written of course.)
+Automation is done via the `{targets}` R package, which provides makefile-like functionality through R.
+You can see the flowchart for the automated steps below, which reruns a target whenever an upstream dependency is modified (eg new file, removed file, edited file).
+Through this, we don't have to worry bout rerunning specific scripts in a specific order.
+
+```{r}
+tar_glimpse(targets_only = TRUE)
+```
+

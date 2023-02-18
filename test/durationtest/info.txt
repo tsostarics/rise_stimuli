@@ -1,0 +1,29 @@
+-------
+Common settings
+-------
+resample_to_16k:  <1>
+windowLength:  <0.025>
+windowPosition:  <0.5>
+maxFormantHz:  <5000>
+-------
+Pitch tracking
+-------
+useExistingPitch: <0>
+f0min:  <40>
+f0max:  <300>
+
+-------
+Formant measures
+-------
+listenToSound:  <0>
+timeStep:  <0>
+maxNumFormants:  <5>
+preEmphFrom:  <50>
+formantTracking:  <0>
+F1ref:  <'F1ref'>
+F2ref:  <'F2ref'>
+F3ref:  <'F3ref'>
+saveAsEPS:  <0>
+useExistingFormants: <0>
+useBandwidthFormula: <0>
+

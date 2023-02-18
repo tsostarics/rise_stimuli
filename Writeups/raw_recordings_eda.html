@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Raw Recordings EDA</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="raw_recordings_eda_files/libs/clipboard/clipboard.min.js"></script>
+<script src="raw_recordings_eda_files/libs/quarto-html/quarto.js"></script>
+<script src="raw_recordings_eda_files/libs/quarto-html/popper.min.js"></script>
+<script src="raw_recordings_eda_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="raw_recordings_eda_files/libs/quarto-html/anchor.min.js"></script>
+<link href="raw_recordings_eda_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="raw_recordings_eda_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="raw_recordings_eda_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="raw_recordings_eda_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="raw_recordings_eda_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Raw Recordings EDA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="raw-recordings-summary" class="level2">
+<h2 class="anchored" data-anchor-id="raw-recordings-summary">Raw Recordings summary</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rPraat)     <span class="co"># Load Praat-related files</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># Tidy Functionality</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sosprosody) <span class="co"># Helper functions for prosody research</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)      <span class="co"># Parallelization for loading files</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(targets)    <span class="co"># For targets integration</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)   <span class="co"># Helps with pitch tracking errors</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"Helpers/EDA_helpers.R"</span>) <span class="co"># Helper functions not general enough for {sosprosody}</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"Helpers/pitcherror_helpers.R"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Directories to pitchtiers and textgrids</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ptdir <span class="ot">&lt;-</span> r<span class="st">"(02_PossibleRecordings\PitchTiers\)"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>tgdir <span class="ot">&lt;-</span> r<span class="st">"(02_PossibleRecordings\MFA_textgrids\)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="file-loading-and-processing" class="level1">
+<h1>File loading and processing</h1>
+<p>Using the functions from <code>sosprosody</code></p>
+<div class="cell">
+
+</div>
+<p>Here I load the textgrid files and label which parts of the utterances are the nuclear words. Then I extract the nuclear regions from the textgrids. Finally, I load the pitchtier files with the following preprocesing steps:</p>
+<ul>
+<li>Label the pitch points that fall in the nuclear regions</li>
+<li>Smooth the pitch contours with 5-point running median smoothing</li>
+<li>Normalize the time such that the first pitch point in the utterance is at time 0 and the last pitch point is at 1</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load textgrid</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>textgrid_df <span class="ot">&lt;-</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tar_read</span>(<span class="st">"process_textgrids"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_nuclear =</span> word_label <span class="sc">%in%</span> nuclear_words,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">wordset =</span> <span class="fu">ifelse</span>(utterance <span class="sc">%in%</span> three_syl_words, <span class="st">"syl3"</span>, <span class="st">"syl2"</span>)) </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove files that have different pronunciations, specifically when</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># "governor" is transcribed as "g0v_@_n@r" instead of "g0v_@r_n@r"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_load</span>(<span class="st">'files_to_omit'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>textgrid_df <span class="ot">&lt;-</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  textgrid_df <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>file <span class="sc">%in%</span> files_to_omit<span class="sc">$</span>file)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract nuclear regions</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>nuclear_regions <span class="ot">&lt;-</span> <span class="fu">get_nuclear_textgrids</span>(textgrid_df, nuclear_words)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Load pitchtiers</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>raw_pitchtier_df <span class="ot">&lt;-</span> <span class="fu">tar_read</span>(<span class="st">"process_pitchtiers"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocess pitchtracks</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>pitchtier_df <span class="ot">&lt;-</span> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  raw_pitchtier_df  <span class="sc">|&gt;</span> </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">preprocess_pitchtracks</span>(nuclear_regions, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                         <span class="at">runmed_k =</span> <span class="dv">5</span>, </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">time_normalize =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                         <span class="at">.fromzero =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tune =</span> <span class="fu">factor</span>(tune, <span class="at">levels =</span> tune_order),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>         <span class="at">wordset =</span> <span class="fu">ifelse</span>(utterance <span class="sc">%in%</span> three_syl_words, <span class="st">"syl3"</span>, <span class="st">"syl2"</span>))</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate average pitch contours for each tune-utterance pair</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>avg_contour_df <span class="ot">&lt;-</span> <span class="fu">tar_read</span>(<span class="st">'average_contours'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># pitchtier_df |&gt;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># # Fix coding issue with points outside of final boundary</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># mutate(is_nuclear = fix_OOB_nuclear_coding(is_nuclear),</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#        tune = factor(tune, levels = tune_order)) |&gt;</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># average_pitchtracks(section_by = "is_nuclear",</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#                     pulses_per_section = c("FALSE" = 15,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                                            "TRUE" = 30),</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                     time_by = "timepoint_norm",</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#                     aggregate_by = file ~ utterance + tune + session,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#                     parallelize = TRUE) |&gt;</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co"># # Smooth average points a little</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># running_median_smooth(.k = 5,</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                       .from = "avg_hz",</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                       .to = "avg_hz_smooth",</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#                       .group = c("utterance", "tune")) |&gt;</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co"># mutate(wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2"))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the recordings by session</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>current_session <span class="ot">&lt;-</span> <span class="st">"syl3.01"</span> <span class="co"># Update this in later sections to change outputs</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>session_pitchtiers <span class="ot">&lt;-</span> <span class="fu">split</span>(pitchtier_df, <span class="sc">~</span> wordset <span class="sc">+</span> session, <span class="at">drop =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>session_averages <span class="ot">&lt;-</span> <span class="fu">split</span>(avg_contour_df, <span class="sc">~</span> wordset <span class="sc">+</span> session, <span class="at">drop =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="three-syllable-words" class="level1">
+<h1>Three Syllable Words</h1>
+<p>In this section I will focus on the three syllable words. I will do basically the same analyses for each session’s recordings, but the observations will of course differ. The helpers from the <code>{sosprosody}</code> package and the <code>EDA_helpers.R</code> file make these analyses easier to do consistently.</p>
+<section id="session-1" class="level2">
+<h2 class="anchored" data-anchor-id="session-1">Session 1</h2>
+<p>The three syllable words from session 1 are as follows:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "evansville"  "governor"    "grandmother" "manager"     "maryland"   
+[6] "middleman"   "northerner"  "weatherman" </code></pre>
+</div>
+</div>
+<p>This plot shows the pitch contours for all the recordings in every utterance and tune condition, colored according to nuclear status.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_averaged_contours</span>(session_pitchtiers[[current_session]], </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                       session_averages[[current_session]], </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">.yavg =</span> <span class="st">"avg_hz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="raw_recordings_eda_files/figure-html/plot-averaged-contours-1.png" class="img-fluid figure-img" width="768"></p>
+<p></p><figcaption class="figure-caption">Time-normalized pitch contours for each recording. Average pitch contours shown as 15 equally-spaced points for the prenuclear region (blue) and 30 equally-spaced points for the nuclear region(red).</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="pitch-tracking-errors" class="level3">
+<h3 class="anchored" data-anchor-id="pitch-tracking-errors">Pitch tracking errors</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>error_check <span class="ot">&lt;-</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  session_pitchtiers[[current_session]] <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file) <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">code_errors_threshold</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cluster_errors</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">check_pitch_doubling</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>error_check <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">any</span>(error)) <span class="sc">|&gt;</span> </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> timepoint, <span class="at">y =</span> hz, <span class="at">group =</span> file, <span class="at">color =</span> is_nuclear)) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">filter</span>(error_check, error), <span class="at">color =</span> <span class="st">'red'</span>) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> .<span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(utterance <span class="sc">~</span> tune) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"dodgerblue4"</span>, <span class="st">"firebrick"</span>))<span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Frequency (Hz)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/plot-pitch-tracking-errors-1.png" class="img-fluid" width="768"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>error_check</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15,339 × 22
+# Groups:   file [155]
+   file           utterance session tune  take  timepoint    hz semitone_differ…
+   &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt;   &lt;fct&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt;
+ 1 evansville_01… evansvil… 01      HHH   001      0       85.2          -0.112 
+ 2 evansville_01… evansvil… 01      HHH   001      0.0100  85.5          -0.0609
+ 3 evansville_01… evansvil… 01      HHH   001      0.0200  86.1           0.0582
+ 4 evansville_01… evansvil… 01      HHH   001      0.0300  85.9           0.0263
+ 5 evansville_01… evansvil… 01      HHH   001      0.0400  85.8           0     
+ 6 evansville_01… evansvil… 01      HHH   001      0.05    86.0           0.0367
+ 7 evansville_01… evansvil… 01      HHH   001      0.06    86.1           0.0729
+ 8 evansville_01… evansvil… 01      HHH   001      0.07    85.9           0.0330
+ 9 evansville_01… evansvil… 01      HHH   001      0.08    85.3          -0.101 
+10 evansville_01… evansvil… 01      HHH   001      0.09    84.4          -0.288 
+# … with 15,329 more rows, and 14 more variables: semitones_from &lt;dbl&gt;,
+#   erb &lt;dbl&gt;, is_nuclear &lt;lgl&gt;, hz_runmed &lt;dbl&gt;, timepoint_norm &lt;dbl&gt;,
+#   wordset &lt;chr&gt;, timepoint_next &lt;dbl&gt;, hz_next &lt;dbl&gt;, st_diff &lt;dbl&gt;,
+#   time_diff_ms &lt;dbl&gt;, error &lt;lgl&gt;, pulse_i &lt;int&gt;, ratio &lt;dbl&gt;,
+#   multiplier_error &lt;lgl&gt;</code></pre>
+</div>
+</div>
+<p>And here are the files that had pitch errors detected. The table displays how many errors were found in both the prenuclear and nuclear regions. Overall, pitch tracking errors tend to be at the beginnings of utterances.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>files_with_errors <span class="ot">&lt;-</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  error_check <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">any</span>(error)) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file, is_nuclear, error) <span class="sc">|&gt;</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n =</span> <span class="fu">sum</span>(error)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(error) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>error) <span class="sc">|&gt;</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>gt<span class="sc">::</span><span class="fu">gt</span>(files_with_errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="ysgocxayzs" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#ysgocxayzs .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ysgocxayzs .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ysgocxayzs .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ysgocxayzs .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ysgocxayzs .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ysgocxayzs .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ysgocxayzs .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ysgocxayzs .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ysgocxayzs .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ysgocxayzs .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ysgocxayzs .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ysgocxayzs .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ysgocxayzs .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ysgocxayzs .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ysgocxayzs .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ysgocxayzs .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ysgocxayzs .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ysgocxayzs .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ysgocxayzs .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ysgocxayzs .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ysgocxayzs .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ysgocxayzs .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ysgocxayzs .gt_left {
+  text-align: left;
+}
+
+#ysgocxayzs .gt_center {
+  text-align: center;
+}
+
+#ysgocxayzs .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ysgocxayzs .gt_font_normal {
+  font-weight: normal;
+}
+
+#ysgocxayzs .gt_font_bold {
+  font-weight: bold;
+}
+
+#ysgocxayzs .gt_font_italic {
+  font-style: italic;
+}
+
+#ysgocxayzs .gt_super {
+  font-size: 65%;
+}
+
+#ysgocxayzs .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#ysgocxayzs .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ysgocxayzs .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ysgocxayzs .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ysgocxayzs .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ysgocxayzs .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">is_nuclear</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">evansville_01_HHH_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_HLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_HLL_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_HLL_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">9</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_HLL_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_HLL_008</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHH_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHH_002</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHH_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">7</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHH_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">evansville_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_HHH_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_HLL_003</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_HLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_LHH_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_LHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_007</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_009</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_010</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HHH_011</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_HLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_LHH_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">7</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_LHH_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_LHH_007</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_LHH_009</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">manager_01_HHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">manager_01_LHH_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">manager_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">manager_01_LSHLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">maryland_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">maryland_01_LSHLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">middleman_01_HHH_002</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">middleman_01_LHH_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">middleman_01_LHSLL_002</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">northerner_01_LHH_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">northerner_01_LHSLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">northerner_01_LSHLL_006</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">northerner_01_LSHLL_007</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LHH_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LHH_005</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LSHLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LSHLL_003</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pluck('file') |&gt; </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># unique()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="duration-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="duration-analysis">Duration analysis</h3>
+<p>Here I limit the investigation to only the nuclear portion of the utterance and calculate the duration of the nuclear tune based on the first and last nuclear pitch point.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>file_durations <span class="ot">&lt;-</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  session_pitchtiers[[current_session]] <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_nuclear) <span class="sc">|&gt;</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_pitchtrack_durations</span>(<span class="sc">~</span>file <span class="sc">+</span> utterance <span class="sc">+</span> tune)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>In the following plot, I show the distribution of duration measurements for each utterance and tune condition. Each facet’s distribution is shown in comparison to the aggregate distribution for the <strong>tune</strong>, in red. For example, the <code>grandmother-HHH</code> distribution, in black, is on the higher end of total <code>HHH</code> distribution. Moreover, we can see that <code>grandmother</code> tends to be on the high end of the duration distribution looking across all tune types.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_duration_histogram</span>(file_durations,<span class="st">'tune'</span>, tune <span class="sc">~</span> utterance, <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/plot-tune-histogram-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<p>Next I show the same exact data, but the aggregate distribution is now aggregated by the utterance instead of the tune. This aggregate distribution is shown in blue (so as to not confuse it with the previous red plot) Here we can see various degrees of bimodality where the bitonal pitch accents have higher durations. However, this comes with the caveat that there are more recordings with L*+H than L+H* because the L+H*LL recordings had substantial creakiness at the phrasal accent.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_duration_histogram</span>(file_durations,<span class="st">'utterance'</span>, tune <span class="sc">~</span> utterance, <span class="st">"blue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/plot-utterance-histogram-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<section id="textgrid-durations" class="level4">
+<h4 class="anchored" data-anchor-id="textgrid-durations">Textgrid durations</h4>
+<p>In this section I will be wrangling the duration measurements from the textgrids produced by the Montreal forced aligner.</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These durations will be <em>slightly different</em> from the durations plotted in the previous histogram. If there are pitch points that occur beyond the word-final boundary placed by MFA, then <strong>duration</strong> as defined by the distance between the first and last pitch pulse (i.e., in the previous histograms) will be slightly longer than the distance as defined by the word-interval length. The calculations that follow use the textgrid-based measurements.</p>
+</div>
+</div>
+<p>When calculating the average lengths of the nuclear words, averaging is built up across representations. Recall that the MFA yields a TextGrid with two tiers: <code>words</code> and <code>phones</code>. Taking the word <em>branning</em> for example, what I’m doing is not averaging across the <code>words</code>-tier interval for <code>[branning]</code>. Rather, I am taking the intervals for each phone and averaging those individually. That is, averaging the <code>[b]</code> interval on the <code>phones</code>-tier. After averaging each phone and shifting them such that the starting duration occurs at 0, the total duration is defined as the cumulative sum of the phone durations. This averaging is done first within each tune-utterance pair, then those averages are themselves averaged within each utterance to minimize uneven sampling within pairs.</p>
+<p>First, we will extract the durations of the nuclear words in each recording. This is defined by simply the end of the <code>words</code> interval corresponding to the word minus the start of that interval. Note these boundaries are also aligned to start of the first phone interval and end of the last phone interval for the word.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>file_tg_durations <span class="ot">&lt;-</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  textgrid_df <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_nuclear) <span class="sc">|&gt;</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file, utterance, session, tune, take) <span class="sc">|&gt;</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">duration =</span> <span class="fu">last</span>(word_end <span class="sc">-</span> word_start))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Next, we will calculate the average phone duration of each tune-utterance pair. For example, the average duration of each phone from all recordings of <em>branning</em> with HLL intonation. The same is done for each recording of <em>branning</em> with LHH intonation <strong>separately</strong>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>avg_phone_duration_by_tuneutt <span class="ot">&lt;-</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  textgrid_df <span class="sc">|&gt;</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_nuclear) <span class="sc">|&gt;</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get the total number of takes for the target tune/utterance, not used though</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, tune, session) <span class="sc">|&gt;</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_takes =</span> <span class="fu">max</span>(<span class="fu">as.integer</span>(take))) <span class="sc">|&gt;</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Establish unique IDs for each phone</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance,tune,session, take) <span class="sc">|&gt;</span> </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phone_i =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate average duration of each phone</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, tune,session, phone_i,wordset) <span class="sc">|&gt;</span> </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">phone_label =</span> <span class="fu">first</span>(phone_label),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg_duration =</span> <span class="fu">mean</span>(phone_end <span class="sc">-</span> phone_start),</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">n_takes =</span> <span class="fu">max</span>(n_takes)) <span class="sc">|&gt;</span> </span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, session, tune, wordset) <span class="sc">|&gt;</span> </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Wrangle durations into starting and ending positions for intervals</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">endpoint =</span> <span class="fu">cumsum</span>(avg_duration),</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">startpoint =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">lead</span>(endpoint)[<span class="sc">-</span><span class="fu">n</span>()]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now that we have the average duration of each phone within each pair, we can average the phones across all tunes. The starting point of the first phone remains at 0, but the starting point of each successive phone is the cumulative sum of each phone duration. Recall that this two-step averaging process within pairs (previous) and then within utterances (current) is done to minimize skewing the durations in favor of pairs with more takes.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>avg_phone_duration_by_utt <span class="ot">&lt;-</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  avg_phone_duration_by_tuneutt <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, session, wordset, phone_i, phone_label) <span class="sc">|&gt;</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_duration =</span> <span class="fu">mean</span>(avg_duration)) <span class="sc">|&gt;</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, session, wordset) <span class="sc">|&gt;</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">endpoint =</span> <span class="fu">cumsum</span>(avg_duration),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">startpoint =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">lead</span>(endpoint)[<span class="sc">-</span><span class="fu">n</span>()]))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(avg_phone_duration_by_utt, "CalculatedFiles/avg_phone_duration_by_utt.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>At this point, we can look at how far off the</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Take the average duration of each phone from each utterance/tune pair, then</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># compare this to the average duration of each phone when averaged across all</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tunes within the utterance</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>avg_deviations <span class="ot">&lt;-</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  session_avg_duration_tuneutt[[current_session]] <span class="sc">|&gt;</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(session_avg_duration_utt[[current_session]],</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                          utterance,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>                          phone_i, <span class="at">avg_utt_duration =</span> avg_duration)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">deviation =</span> avg_duration <span class="sc">-</span> avg_utt_duration)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot how far off the phone's duration is from the average duration</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Positive = Phone in this tune is longer than average</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Negative = Phone in this tune is shorter than average</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>avg_deviations <span class="sc">|&gt;</span> </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">color =</span> <span class="fu">ifelse</span>(deviation <span class="sc">&lt;=</span> <span class="dv">0</span>, <span class="st">'firebrick'</span>, <span class="st">'dodgerblue4'</span>),</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">textposition =</span> <span class="fu">ifelse</span>(deviation <span class="sc">&gt;=</span> <span class="dv">0</span>, </span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>                               deviation <span class="sc">+</span> .<span class="dv">015</span>, </span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>                               deviation <span class="sc">-</span> .<span class="dv">015</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> phone_i, <span class="at">y =</span> deviation, <span class="at">fill =</span> <span class="fu">I</span>(color))) <span class="sc">+</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> phone_label, <span class="at">y =</span> textposition)) <span class="sc">+</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(utterance <span class="sc">~</span> tune) <span class="sc">+</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">+</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">ratio =</span> <span class="dv">9</span><span class="sc">/</span>.<span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Phone Index"</span>) <span class="sc">+</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Deviation from Mean Phone Duration"</span>) <span class="sc">+</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">size =</span> .<span class="dv">3</span>),</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor.y =</span> <span class="fu">element_line</span>(<span class="at">size =</span> .<span class="dv">2</span>),</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="raw_recordings_eda_files/figure-html/plot-phone-duration-deviations-1.png" class="img-fluid figure-img" width="864"></p>
+<p></p><figcaption class="figure-caption">Average phone duration for utterance-tune pairs compared to the average phone duration across all tunes for an utterance. Deviations from the average are shown in milliseconds.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now that we’ve gotten the average for each phone within each utterance, we can extract the average duration of the nuclear word. This is equivalent to the timestamp of the endpoint for the last phone from the previous calculation (hence why we computed the cumulative sums).</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the average duration for each nuclear word based on the average</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># phone durations previously calculated. This df is essentially a simplified</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># version of avg_phone_duration_by utt containing the last endpoint value.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># (recall the durations start from 0 but are not time-normalized out of 1)</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>avg_nucword_duration <span class="ot">&lt;-</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  avg_phone_duration_by_utt <span class="sc">|&gt;</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, session, wordset) <span class="sc">|&gt;</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">duration =</span> <span class="fu">last</span>(endpoint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Currently, we have at our disposal the nuclear word durations for each file and the average nuclear word for each utterance, built up from the phone durations within each tune-utterance pair then averaged across tunes (=within utterance). Now, we can see <em>how far off</em> each file’s duration is from its associated utterance average. By doing so we calculate how much we would need to shrink or stretch the nuclear word’s duration to match the average, i.e., the <em>scaling factor</em></p>
+<ul>
+<li><code>scaling_factor</code> will be 1 if the file’s duration matches the average duration exactly</li>
+<li><code>scaling_factor</code> will be less than 1 (but greater than 0) if the file’s duration is <strong>greater</strong> than the average, indicating that the file would need to be <strong>shrunk</strong>. E.g., a factor of <code>0.5</code> indicates that the file’s duration should be shrunk by half.</li>
+<li><code>scaling_factor</code> will be greater than 1 if the file’s duration is <strong>less</strong> than the average, indicating that the file would need to be <strong>stretched</strong>. E.g., a factor of <code>2.0</code> indicates that the file’s duration should be doubled.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>file_scaling_factors <span class="ot">&lt;-</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  file_tg_durations <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(avg_nucword_duration, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'utterance'</span>,<span class="st">'session'</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">file_duration =</span> duration.x,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">avg_duration =</span> duration.y) <span class="sc">|&gt;</span> </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">scaling_factor =</span> avg_duration <span class="sc">/</span> file_duration)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now that we know how much <em>each file</em> needs to be shrunk or stretched, we can find out which file would require the least amount of duration manipulation. Conceptually, this is the same as evaluating which file’s duration is closest to the average duration. Note that this calculation is not just taking the minimum scaling factor, but rather the minimum of <code>abs(1 - scaling_factor)</code>. As an intermediate step, we can check which file within each tune is closest to the average duration. Why would we care about this when we can get the absolute closest file (which we do next)? Well, we can feed these files to <code>praatSauce</code>, which extracts voice quality measures. This script suite is extremely computationally intensive and outputs an <em>immense</em> amount of data, so limiting the amount of files would be useful.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># As an intermediate step, we can see which file within each tune is closest.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>minimally_scaled_files_by_tune <span class="ot">&lt;-</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  file_scaling_factors <span class="sc">|&gt;</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">keep =</span> <span class="fu">case_when</span>(utterance <span class="sc">==</span> <span class="st">'northerner'</span> <span class="sc">&amp;</span> session <span class="sc">==</span> <span class="st">"01"</span> <span class="sc">~</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                          utterance <span class="sc">==</span> <span class="st">'maryland'</span> <span class="sc">&amp;</span> session <span class="sc">==</span> <span class="st">"01"</span> <span class="sc">~</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                          utterance <span class="sc">==</span> <span class="st">'weatherman'</span> <span class="sc">&amp;</span> session <span class="sc">==</span> <span class="st">'01'</span> <span class="sc">~</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                          <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(keep) <span class="sc">|&gt;</span> </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(session,utterance,tune) <span class="sc">|&gt;</span> </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_from_one =</span> <span class="fu">abs</span>(<span class="dv">1</span><span class="sc">-</span>scaling_factor),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">is_min =</span> <span class="fu">min</span>(dist_from_one) <span class="sc">==</span> dist_from_one) <span class="sc">|&gt;</span> </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_min) <span class="sc">|&gt;</span> </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, tune) <span class="sc">|&gt;</span> </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">1</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Update this file if it's been deleted or if it needs to be changed,</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co"># the modification will feed into a target that tracks the file for changes</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="fu">write_lines</span>(minimally_scaled_files_by_tune<span class="sc">$</span>file,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"CalculatedFiles/chosen_recordings.txt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Update 08/20/2022: I’m keeping the method to select the chosen recordings, but the average syllable durations are recalculated below to average across only the selected recordings. The reasoning behind this is that the textgrids from the MFA are ever so slightly off, so the syllable boundaries had to be fixed manually. This is too much work to do for 500+ files, but is manageable for about 70.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>chosen_tg_df <span class="ot">&lt;-</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="st">"03_ChosenRecordings/FixedTextGrids/"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dfr</span>(\(x) <span class="fu">textgrid_to_dataframes</span>(<span class="fu">tg.read</span>(x, <span class="st">'auto'</span>))<span class="sc">$</span>phones)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>chosen_tg_nuclear_region <span class="ot">&lt;-</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="st">"03_ChosenRecordings/FixedTextGrids/"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dfr</span>(\(x) <span class="fu">textgrid_to_dataframes</span>(<span class="fu">tg.read</span>(x, <span class="st">'auto'</span>))<span class="sc">$</span>nuclear) <span class="sc">|&gt;</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(label <span class="sc">!=</span> <span class="st">""</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>filtered_tg_df <span class="ot">&lt;-</span> </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  chosen_tg_df <span class="sc">|&gt;</span> </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(label <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file) <span class="sc">|&gt;</span> </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phone_i =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file, phone_i) <span class="sc">|&gt;</span> </span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_nuclear =</span> </span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>           interval_start <span class="sc">&gt;=</span> chosen_tg_nuclear_region[chosen_tg_nuclear_region<span class="sc">==</span>file,</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>                                                      <span class="st">'interval_start'</span>] <span class="sc">&amp;&amp;</span> </span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>           interval_end <span class="sc">&lt;=</span> chosen_tg_nuclear_region[chosen_tg_nuclear_region<span class="sc">==</span>file,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>                                                    <span class="st">'interval_end'</span>]) <span class="sc">|&gt;</span> </span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_nuclear) <span class="sc">|&gt;</span> </span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file) <span class="sc">|&gt;</span> </span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phone_i =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>is_nuclear)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>chosen_file_avgd_syllable_durations <span class="ot">&lt;-</span> </span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  filtered_tg_df <span class="sc">|&gt;</span> </span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(file) <span class="sc">|&gt;</span> </span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">interval_end =</span> interval_end <span class="sc">-</span> <span class="fu">min</span>(interval_start),</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">interval_start =</span> interval_start <span class="sc">-</span> <span class="fu">min</span>(interval_start)) <span class="sc">|&gt;</span> </span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">file =</span> <span class="fu">gsub</span>(<span class="st">".TextGrid"</span>, <span class="st">""</span>, file)) <span class="sc">|&gt;</span> </span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(file,</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"utterance"</span>,<span class="st">"session"</span>,<span class="st">"tune"</span>,<span class="st">"take"</span>),</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">remove =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">duration =</span> interval_end <span class="sc">-</span> interval_start) <span class="sc">|&gt;</span> </span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance,session, phone_i, label) <span class="sc">|&gt;</span> </span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_duration =</span> <span class="fu">mean</span>(duration)) <span class="sc">|&gt;</span> </span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance) <span class="sc">|&gt;</span> </span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">endpoint =</span> <span class="fu">cumsum</span>(avg_duration),</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>         <span class="at">startpoint =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">lead</span>(endpoint)[<span class="sc">-</span><span class="fu">n</span>()])) <span class="sc">|&gt;</span> </span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">phone_label =</span> label) <span class="sc">|&gt;</span> </span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wordset =</span> <span class="fu">ifelse</span>(utterance <span class="sc">%in%</span> three_syl_words, <span class="st">"syl3"</span>, <span class="st">"syl2"</span>))</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(chosen_file_avgd_syllable_durations, </span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>        <span class="st">"CalculatedFiles/avg_phone_duration_by_utt.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>For each utterance, there is one recording for each tune that has the closest scaling factor to 1 (=minimum change). Out of all these tunes, we want to know, for each utterance, which tune has a scaling factor closest to 1. The plot below shows the scaling factors for each tune and each utterance.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>minimally_scaled_files_by_tune <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(session,utterance) <span class="sc">|&gt;</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_from_one =</span> <span class="fu">abs</span>(<span class="dv">1</span><span class="sc">-</span>scaling_factor),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">is_min =</span> <span class="fu">min</span>(dist_from_one) <span class="sc">==</span> dist_from_one,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">is_min =</span> <span class="fu">ifelse</span>(is_min, <span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">session_i =</span> <span class="fu">paste</span>(wordset, session, <span class="at">sep =</span> <span class="st">"."</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(session_i <span class="sc">==</span> current_session) <span class="sc">|&gt;</span> </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> utterance, <span class="at">x =</span> scaling_factor, <span class="at">shape =</span> tune, <span class="at">color =</span> <span class="fu">I</span>(is_min))) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">'red'</span>, <span class="at">linetype =</span> <span class="st">'dashed'</span>) <span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Scaling factor"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/plot-minimally-scaled-files-by-tune-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<p>Now we can tabulate which files are closest to the average. This will give us an easily accessable table containing the files and scaling factors we want to use.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Recall that we’re using durations from the textgrids of the MFA. It’s important to realize that the precision of these intervals is on the scale of 10ms, hence two different recordings may have different durations on the millisecond scale but come up as having “the same” duration in the calculations below, hence why <code>slice_head(n=1)</code> is used.</p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>minimally_scaled_files <span class="ot">&lt;-</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  file_scaling_factors <span class="sc">|&gt;</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(session,utterance) <span class="sc">|&gt;</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_from_one =</span> <span class="fu">abs</span>(<span class="dv">1</span><span class="sc">-</span>scaling_factor),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">is_min =</span> <span class="fu">min</span>(dist_from_one) <span class="sc">==</span> dist_from_one) <span class="sc">|&gt;</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_min) <span class="sc">|&gt;</span>  </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>is_min) <span class="sc">|&gt;</span> </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(utterance, session) <span class="sc">|&gt;</span> </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>minimally_scaled_files <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">session_i =</span> <span class="fu">paste</span>(wordset, session, <span class="at">sep =</span> <span class="st">"."</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(session_i <span class="sc">==</span> current_session) <span class="sc">|&gt;</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>take,<span class="sc">-</span>session_i, <span class="sc">-</span>wordset, <span class="sc">-</span>avg_duration, <span class="sc">-</span>dist_from_one) <span class="sc">|&gt;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">file_duration =</span> <span class="fu">round</span>(file_duration, <span class="dv">3</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">caption =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"Final files and scaling factors for session {current_session}"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="wjwgrxjhve" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#wjwgrxjhve .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wjwgrxjhve .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wjwgrxjhve .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wjwgrxjhve .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wjwgrxjhve .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wjwgrxjhve .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wjwgrxjhve .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wjwgrxjhve .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wjwgrxjhve .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wjwgrxjhve .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wjwgrxjhve .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wjwgrxjhve .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wjwgrxjhve .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjwgrxjhve .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wjwgrxjhve .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wjwgrxjhve .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjwgrxjhve .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wjwgrxjhve .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjwgrxjhve .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wjwgrxjhve .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjwgrxjhve .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wjwgrxjhve .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wjwgrxjhve .gt_left {
+  text-align: left;
+}
+
+#wjwgrxjhve .gt_center {
+  text-align: center;
+}
+
+#wjwgrxjhve .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wjwgrxjhve .gt_font_normal {
+  font-weight: normal;
+}
+
+#wjwgrxjhve .gt_font_bold {
+  font-weight: bold;
+}
+
+#wjwgrxjhve .gt_font_italic {
+  font-style: italic;
+}
+
+#wjwgrxjhve .gt_super {
+  font-size: 65%;
+}
+
+#wjwgrxjhve .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#wjwgrxjhve .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#wjwgrxjhve .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wjwgrxjhve .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#wjwgrxjhve .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#wjwgrxjhve .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  <caption>Final files and scaling factors for session syl3.01</caption>
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">utterance</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">session</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">tune</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">file_duration</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">scaling_factor</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">evansville_01_HLL_007</td>
+<td class="gt_row gt_left">evansville</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.66</td>
+<td class="gt_row gt_right">0.9927273</td></tr>
+    <tr><td class="gt_row gt_left">governor_01_LHH_002</td>
+<td class="gt_row gt_left">governor</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.60</td>
+<td class="gt_row gt_right">1.0062500</td></tr>
+    <tr><td class="gt_row gt_left">grandmother_01_LHH_005</td>
+<td class="gt_row gt_left">grandmother</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.76</td>
+<td class="gt_row gt_right">1.0029240</td></tr>
+    <tr><td class="gt_row gt_left">manager_01_LHH_003</td>
+<td class="gt_row gt_left">manager</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.65</td>
+<td class="gt_row gt_right">1.0244689</td></tr>
+    <tr><td class="gt_row gt_left">maryland_01_LHH_002</td>
+<td class="gt_row gt_left">maryland</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.63</td>
+<td class="gt_row gt_right">1.0879365</td></tr>
+    <tr><td class="gt_row gt_left">middleman_01_LHH_002</td>
+<td class="gt_row gt_left">middleman</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.71</td>
+<td class="gt_row gt_right">1.0431925</td></tr>
+    <tr><td class="gt_row gt_left">northerner_01_HLL_004</td>
+<td class="gt_row gt_left">northerner</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.61</td>
+<td class="gt_row gt_right">0.9914130</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_01_LHH_003</td>
+<td class="gt_row gt_left">weatherman</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHH</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">1.1151961</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>This final table of values will be used to create the duration tiers for automatically scaling the audio files. The resulting duration-normalized files can then be resynthesized.</p>
+</section>
+</section>
+</section>
+<section id="session-2" class="level2">
+<h2 class="anchored" data-anchor-id="session-2">Session 2</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>current_session <span class="ot">&lt;-</span> <span class="st">"syl3.02"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "maryland"    "northerner"  "weatherman"  "weaverville"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="768"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20,932 × 22
+# Groups:   file [193]
+   file           utterance session tune  take  timepoint    hz semitone_differ…
+   &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt;   &lt;fct&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt;
+ 1 maryland_02_H… maryland  02      HLL   001      0       83.0           -0.260
+ 2 maryland_02_H… maryland  02      HLL   001      0.0100  84.2            0    
+ 3 maryland_02_H… maryland  02      HLL   001      0.0200  85.8            0.313
+ 4 maryland_02_H… maryland  02      HLL   001      0.0300  86.3            0.414
+ 5 maryland_02_H… maryland  02      HLL   001      0.04    82.7           -0.312
+ 6 maryland_02_H… maryland  02      HLL   001      0.05    82.7           -0.326
+ 7 maryland_02_H… maryland  02      HLL   001      0.06    82.5           -0.352
+ 8 maryland_02_H… maryland  02      HLL   001      0.07    82.5           -0.365
+ 9 maryland_02_H… maryland  02      HLL   001      0.08    82.8           -0.291
+10 maryland_02_H… maryland  02      HLL   001      0.09    83.5           -0.143
+# … with 20,922 more rows, and 14 more variables: semitones_from &lt;dbl&gt;,
+#   erb &lt;dbl&gt;, is_nuclear &lt;lgl&gt;, hz_runmed &lt;dbl&gt;, timepoint_norm &lt;dbl&gt;,
+#   wordset &lt;chr&gt;, timepoint_next &lt;dbl&gt;, hz_next &lt;dbl&gt;, st_diff &lt;dbl&gt;,
+#   time_diff_ms &lt;dbl&gt;, error &lt;lgl&gt;, pulse_i &lt;int&gt;, ratio &lt;dbl&gt;,
+#   multiplier_error &lt;lgl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="gckgzqnkqq" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#gckgzqnkqq .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gckgzqnkqq .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gckgzqnkqq .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gckgzqnkqq .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gckgzqnkqq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gckgzqnkqq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gckgzqnkqq .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gckgzqnkqq .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gckgzqnkqq .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gckgzqnkqq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gckgzqnkqq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gckgzqnkqq .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gckgzqnkqq .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gckgzqnkqq .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gckgzqnkqq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gckgzqnkqq .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gckgzqnkqq .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gckgzqnkqq .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gckgzqnkqq .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gckgzqnkqq .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gckgzqnkqq .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gckgzqnkqq .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gckgzqnkqq .gt_left {
+  text-align: left;
+}
+
+#gckgzqnkqq .gt_center {
+  text-align: center;
+}
+
+#gckgzqnkqq .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gckgzqnkqq .gt_font_normal {
+  font-weight: normal;
+}
+
+#gckgzqnkqq .gt_font_bold {
+  font-weight: bold;
+}
+
+#gckgzqnkqq .gt_font_italic {
+  font-style: italic;
+}
+
+#gckgzqnkqq .gt_super {
+  font-size: 65%;
+}
+
+#gckgzqnkqq .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#gckgzqnkqq .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#gckgzqnkqq .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gckgzqnkqq .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#gckgzqnkqq .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#gckgzqnkqq .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">is_nuclear</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">maryland_02_HLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHH_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHH_014</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHSLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHSLL_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHSLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LHSLL_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LSHLL_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">maryland_02_LSHLL_012</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">northerner_02_HLL_011</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">northerner_02_LHH_002</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_02_HLL_009</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">7</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_HLL_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_HLL_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_HLL_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_LHH_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_LHH_011</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="ftmqzadbxp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#ftmqzadbxp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ftmqzadbxp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ftmqzadbxp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ftmqzadbxp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ftmqzadbxp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ftmqzadbxp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ftmqzadbxp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ftmqzadbxp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ftmqzadbxp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ftmqzadbxp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ftmqzadbxp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ftmqzadbxp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ftmqzadbxp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ftmqzadbxp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ftmqzadbxp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ftmqzadbxp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ftmqzadbxp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ftmqzadbxp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ftmqzadbxp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ftmqzadbxp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ftmqzadbxp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ftmqzadbxp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ftmqzadbxp .gt_left {
+  text-align: left;
+}
+
+#ftmqzadbxp .gt_center {
+  text-align: center;
+}
+
+#ftmqzadbxp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ftmqzadbxp .gt_font_normal {
+  font-weight: normal;
+}
+
+#ftmqzadbxp .gt_font_bold {
+  font-weight: bold;
+}
+
+#ftmqzadbxp .gt_font_italic {
+  font-style: italic;
+}
+
+#ftmqzadbxp .gt_super {
+  font-size: 65%;
+}
+
+#ftmqzadbxp .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#ftmqzadbxp .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ftmqzadbxp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ftmqzadbxp .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ftmqzadbxp .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ftmqzadbxp .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  <caption>Final files and scaling factors for session syl3.02</caption>
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">utterance</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">session</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">tune</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">file_duration</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">scaling_factor</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">maryland_02_LHSLL_004</td>
+<td class="gt_row gt_left">maryland</td>
+<td class="gt_row gt_left">02</td>
+<td class="gt_row gt_left">LHSLL</td>
+<td class="gt_row gt_right">0.71</td>
+<td class="gt_row gt_right">0.9830986</td></tr>
+    <tr><td class="gt_row gt_left">northerner_02_LSHLL_009</td>
+<td class="gt_row gt_left">northerner</td>
+<td class="gt_row gt_left">02</td>
+<td class="gt_row gt_left">LSHLL</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">0.9902267</td></tr>
+    <tr><td class="gt_row gt_left">weatherman_02_HLL_002</td>
+<td class="gt_row gt_left">weatherman</td>
+<td class="gt_row gt_left">02</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.79</td>
+<td class="gt_row gt_right">0.9903489</td></tr>
+    <tr><td class="gt_row gt_left">weaverville_02_HLL_003</td>
+<td class="gt_row gt_left">weaverville</td>
+<td class="gt_row gt_left">02</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">1.0360294</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="two-syllable-words" class="level1">
+<h1>Two Syllable Words</h1>
+<section id="session-1-1" class="level2">
+<h2 class="anchored" data-anchor-id="session-1-1">Session 1</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>current_session <span class="ot">&lt;-</span> <span class="st">"syl2.01"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "branning"  "broadway"  "bronville" "grandma"   "greenview"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="768"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 23,901 × 22
+# Groups:   file [223]
+   file           utterance session tune  take  timepoint    hz semitone_differ…
+   &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt;   &lt;fct&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;            &lt;dbl&gt;
+ 1 branning_01_H… branning  01      HHH   001      0      102.             0.357
+ 2 branning_01_H… branning  01      HHH   001      0.0100 101.             0.121
+ 3 branning_01_H… branning  01      HHH   001      0.0200 100.             0    
+ 4 branning_01_H… branning  01      HHH   001      0.03    99.5           -0.124
+ 5 branning_01_H… branning  01      HHH   001      0.04    98.9           -0.227
+ 6 branning_01_H… branning  01      HHH   001      0.05    97.1           -0.546
+ 7 branning_01_H… branning  01      HHH   001      0.06    95.9           -0.772
+ 8 branning_01_H… branning  01      HHH   001      0.07    95.3           -0.883
+ 9 branning_01_H… branning  01      HHH   001      0.08    94.6           -0.996
+10 branning_01_H… branning  01      HHH   001      0.09    93.9           -1.14 
+# … with 23,891 more rows, and 14 more variables: semitones_from &lt;dbl&gt;,
+#   erb &lt;dbl&gt;, is_nuclear &lt;lgl&gt;, hz_runmed &lt;dbl&gt;, timepoint_norm &lt;dbl&gt;,
+#   wordset &lt;chr&gt;, timepoint_next &lt;dbl&gt;, hz_next &lt;dbl&gt;, st_diff &lt;dbl&gt;,
+#   time_diff_ms &lt;dbl&gt;, error &lt;lgl&gt;, pulse_i &lt;int&gt;, ratio &lt;dbl&gt;,
+#   multiplier_error &lt;lgl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="dohzcxekgl" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#dohzcxekgl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#dohzcxekgl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#dohzcxekgl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#dohzcxekgl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#dohzcxekgl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#dohzcxekgl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#dohzcxekgl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#dohzcxekgl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dohzcxekgl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dohzcxekgl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#dohzcxekgl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#dohzcxekgl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#dohzcxekgl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dohzcxekgl .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#dohzcxekgl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#dohzcxekgl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dohzcxekgl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#dohzcxekgl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dohzcxekgl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#dohzcxekgl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dohzcxekgl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dohzcxekgl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dohzcxekgl .gt_left {
+  text-align: left;
+}
+
+#dohzcxekgl .gt_center {
+  text-align: center;
+}
+
+#dohzcxekgl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#dohzcxekgl .gt_font_normal {
+  font-weight: normal;
+}
+
+#dohzcxekgl .gt_font_bold {
+  font-weight: bold;
+}
+
+#dohzcxekgl .gt_font_italic {
+  font-style: italic;
+}
+
+#dohzcxekgl .gt_super {
+  font-size: 65%;
+}
+
+#dohzcxekgl .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#dohzcxekgl .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#dohzcxekgl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#dohzcxekgl .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#dohzcxekgl .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#dohzcxekgl .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1">is_nuclear</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">branning_01_HHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_HLL_006</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_HLL_007</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_HLL_008</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_LHSLL_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_LHSLL_006</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">branning_01_LHSLL_007</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_HLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_HLL_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_LHH_007</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_LHH_013</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_LHSLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_HLL_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_HLL_009</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_HLL_009</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHH_011</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHSLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHSLL_006</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHSLL_008</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LSHLL_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LSHLL_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LSHLL_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LSHLL_007</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_003</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_013</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_014</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">3</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_021</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HHH_023</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_002</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_002</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_003</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_HLL_005</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHH_001</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHH_003</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHH_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">6</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHH_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHH_006</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHSLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHSLL_004</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHSLL_006</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHSLL_009</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LSHLL_007</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">4</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LSHLL_011</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">1</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_HHH_004</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">8</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LHH_005</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LHH_008</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">5</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LHH_009</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LSHLL_001</td>
+<td class="gt_row gt_center">TRUE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LSHLL_008</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">2</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_LSHLL_010</td>
+<td class="gt_row gt_center">FALSE</td>
+<td class="gt_row gt_right">7</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="raw_recordings_eda_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="ktjrlrqevi" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#ktjrlrqevi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ktjrlrqevi .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ktjrlrqevi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ktjrlrqevi .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ktjrlrqevi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ktjrlrqevi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ktjrlrqevi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ktjrlrqevi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ktjrlrqevi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ktjrlrqevi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ktjrlrqevi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ktjrlrqevi .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ktjrlrqevi .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktjrlrqevi .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ktjrlrqevi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ktjrlrqevi .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktjrlrqevi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ktjrlrqevi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktjrlrqevi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ktjrlrqevi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktjrlrqevi .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ktjrlrqevi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktjrlrqevi .gt_left {
+  text-align: left;
+}
+
+#ktjrlrqevi .gt_center {
+  text-align: center;
+}
+
+#ktjrlrqevi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ktjrlrqevi .gt_font_normal {
+  font-weight: normal;
+}
+
+#ktjrlrqevi .gt_font_bold {
+  font-weight: bold;
+}
+
+#ktjrlrqevi .gt_font_italic {
+  font-style: italic;
+}
+
+#ktjrlrqevi .gt_super {
+  font-size: 65%;
+}
+
+#ktjrlrqevi .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#ktjrlrqevi .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ktjrlrqevi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ktjrlrqevi .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ktjrlrqevi .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ktjrlrqevi .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  <caption>Final files and scaling factors for session syl2.01</caption>
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">file</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">utterance</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">session</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">tune</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">file_duration</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">scaling_factor</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left">branning_01_LHSLL_002</td>
+<td class="gt_row gt_left">branning</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHSLL</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">0.9866013</td></tr>
+    <tr><td class="gt_row gt_left">broadway_01_HLL_003</td>
+<td class="gt_row gt_left">broadway</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.65</td>
+<td class="gt_row gt_right">1.0404029</td></tr>
+    <tr><td class="gt_row gt_left">bronville_01_LHSLL_004</td>
+<td class="gt_row gt_left">bronville</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHSLL</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">1.0128877</td></tr>
+    <tr><td class="gt_row gt_left">grandma_01_LHSLL_003</td>
+<td class="gt_row gt_left">grandma</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">LHSLL</td>
+<td class="gt_row gt_right">0.68</td>
+<td class="gt_row gt_right">1.0009413</td></tr>
+    <tr><td class="gt_row gt_left">greenview_01_HLL_006</td>
+<td class="gt_row gt_left">greenview</td>
+<td class="gt_row gt_left">01</td>
+<td class="gt_row gt_left">HLL</td>
+<td class="gt_row gt_right">0.71</td>
+<td class="gt_row gt_right">0.9994911</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

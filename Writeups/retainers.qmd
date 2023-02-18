@@ -1,0 +1,280 @@
+---
+title: "Retainers"
+format: html
+---
+
+## Retainers
+
+
+```{r}
+#| message: false
+# Get time-normalized durations for each phone of the nuclear word
+textgrid_plot_df <- 
+  textgrid_df |> 
+  filter(is_nuclear) |>
+  group_by(file) |> 
+  mutate(phone_end = phone_end - min(phone_start),
+         phone_start = phone_start - min(phone_start),
+         phone_start = phone_start / max(phone_end),
+         phone_end = phone_end / max(phone_end)) |> 
+  mutate(ymin = as.numeric(take),
+         ymax = ymin + .5,
+         midpoint = ymin + .25,
+         tune = factor(tune, levels = tune_order))
+```
+
+This document holds chunks that I wrote in older versions of analyses
+that I don't think I need anymore.
+I could just use `include: false` but it still clutters things up.
+
+```{r overlaid-interval-plot}
+#| include: false
+# This plot isn't terribly useful, but it shows the average interval durations
+# superimposed on top of all the intervals from the different takes
+session_timenormed_textgrids[[current_session]] |> 
+  ggplot(aes(xmin = phone_start,
+             xmax = phone_end,
+             ymin = ymin,
+             ymax = ymax,
+             group = utterance)) +
+  geom_rect(fill = 'white', color = 'black') +
+  # geom_rect(data = avg_duration_utt,
+  #           aes(xmin = startpoint,
+  #               xmax = endpoint,
+  #               ymin = 0,
+  #               ymax = n_takes+1),
+  #           fill = NA, 
+  #           color = 'blue') +
+  geom_rect(data = session_avg_duration_tuneutt[[current_session]],
+            aes(xmin = startpoint,
+                xmax = endpoint,
+                ymin = .5,
+                ymax = n_takes+.5),
+            fill = NA,
+            color = 'red') +
+  theme_minimal() +
+  facet_grid(tune~utterance,scales = "free") +
+  xlim(c(0,1))+
+  theme(panel.grid = element_blank())
+
+
+```
+
+Below we can see the comparisons for the average phone duration for all takes
+for an utterance with a tune compared to the overall average across all tunes
+with that utterance. For example, the mean of the \[g\] in "grandmother" from
+the HLL recordings compared to the same phone across all recordings.
+
+$$ 
+\mu_{\text{[g]}\in\overset{HLL}{\text{grandmother}}} - 
+\mu_{\text{[g]}\in\overset{x}{\text{grandmother}}} \\
+$$
+
+```{r plot-phone-duration-deviations}
+#| message: false
+#| fig-width: 9
+#| fig-height: 10
+#| fig-cap: "Average phone duration for utterance-tune pairs compared to the average phone duration across all tunes for an utterance. Deviations from the average are shown in milliseconds."
+
+# Take the average duration of each phone from each utterance/tune pair, then
+# compare this to the average duration of each phone when averaged across all
+# tunes within the utterance
+avg_deviations <- 
+  session_avg_duration_tuneutt[[current_session]] |> 
+  left_join(dplyr::select(session_avg_duration_utt[[current_session]],
+                          utterance,
+                          phone_i, avg_utt_duration = avg_duration)) |> 
+  mutate(deviation = avg_duration - avg_utt_duration)
+
+# Plot how far off the phone's duration is from the average duration
+# Positive = Phone in this tune is longer than average
+# Negative = Phone in this tune is shorter than average
+avg_deviations |> 
+  mutate(color = ifelse(deviation <= 0, 'firebrick', 'dodgerblue4'),
+         textposition = ifelse(deviation >= 0, 
+                               deviation + .015, 
+                               deviation - .015)) |> 
+  ggplot(aes(x = phone_i, y = deviation, fill = I(color))) +
+  geom_bar(stat = 'identity') +
+  geom_text(aes(label = phone_label, y = textposition)) +
+  facet_grid(utterance ~ tune) +
+  geom_hline(yintercept= 0) +
+  scale_x_continuous(breaks= 1:9, labels = 1:9) +
+  coord_fixed(ratio = 9/.2) +
+  xlab("Phone Index") +
+  ylab("Deviation from Mean Phone Duration") +
+  theme_bw() +
+  theme(panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(size = .3),
+        panel.grid.minor.y = element_line(size = .2),
+        axis.title = element_text(size = 14))
+
+```
+
+We can verify these calculations manually, taking the /w/ segment in
+"weatherman" as an example:
+
+```{r verify-duration-calculations}
+mean_w_overall <-  
+  textgrid_df |> 
+  filter(is_nuclear)  |>
+  filter(utterance == 'weatherman', phone_label == 'w') |> 
+  transmute(duration= phone_end - phone_start) |> 
+  purrr::pluck('duration') |> 
+  mean()
+
+mean_w_tunes <- 
+  textgrid_df |> 
+  filter(is_nuclear)  |>
+  filter(utterance == 'weatherman', phone_label == 'w') |> 
+  group_by(tune) |> 
+  summarize(duration = mean(phone_end - phone_start)) |> 
+  purrr::pluck('duration')
+
+# Compare to graph
+mean_w_tunes - mean_w_overall
+
+```
+
+#### Matching durations
+
+Below shows the code for establishing standardized target durations for
+each phone across multiple utterances.
+There's an important simplifying assumption in this implementation that
+they all have the *same number of phones*, in this case 7.
+This may very well change later, but it serves as a good starting point for
+getting some of the calculations underway.
+I've also added a rough coding system for syllable number, which may be useful
+later on if/when we consider words with differing numbers of syllables.
+Here I use the words *northerner* and *weatherman*; although I would like
+to add in either *weaverville*, *berryville*, or *merryville* as a third option.
+
+```{r}
+#| message: false
+seven_phone_df <- 
+  textgrid_df |> 
+  filter(utterance %in% c("weatherman", "northerner"),
+         is_nuclear) |> 
+  group_by(utterance) |> 
+  mutate(phone_i = phone_i - min(phone_i) + 1,
+         syllable = case_when(utterance == "weatherman" & phone_i < 3 ~ 1,
+                              utterance == "weatherman" & phone_i < 5 ~ 2,
+                              utterance == "northerner" & phone_i < 4 ~ 1,
+                              utterance == "northerner" & phone_i < 6 ~ 2,
+                              TRUE ~ 3))
+# mean_nuclear_phone_durations <- 
+#   seven_phone_df |> 
+#   group_by(utterance, syllable,  phone_i) |> 
+#   mutate(phone_duration = phone_end - phone_start) |> 
+#   summarize(phone_label = first(phone_label),
+#             avg_duration = mean(phone_duration))
+# 
+# 
+# mean_syllable_durations <- 
+#   mean_nuclear_phone_durations |> 
+#   group_by(syllable, utterance) |> 
+#   summarize( duration = sum(avg_duration))
+# 
+target_nuclear_phone_durations <-
+  seven_phone_df |>
+  group_by(phone_i) |>
+  mutate(phone_duration = phone_end - phone_start) |>
+  summarize(mean_se(phone_duration)) |>
+  rename(target_duration = y)
+
+# Helper to make new start points given an initial point and durations to add
+add_duration_to_start <- function(x1, x2) {
+  output <- x2[NA]
+  output[1] <- x1[1]
+  
+  # -1 because the last duration isn't applied (use it to get the last endpoint)
+  for (i in seq_along(x2[-1])) {
+    output[i+1] <- output[i] + x2[i]
+  }
+  
+  output
+}
+
+target_durations_df <-
+  seven_phone_df |> 
+  group_by(utterance,  phone_i) |> 
+  mutate(phone_duration = phone_end - phone_start) |> 
+  dplyr::select(file,phone_i, phone_label, phone_start, phone_end, phone_duration) |> 
+  left_join(dplyr::select(target_nuclear_phone_durations, -ymin, -ymax)) |> 
+  group_by(file) |> 
+  mutate(target_start = add_duration_to_start(phone_start, target_duration),
+         target_end = target_start + target_duration,
+         change_multiplier = target_duration/phone_duration)
+```
+
+Here we can show what the duration morphing process would look like.
+In this plot, two files are shown as an example, where the original phone
+durations are shown in black while the new target phone durations are shown
+in red.
+Importantly, the individual phone durations are matched across utterances.
+So, the first phone in *northerner* has the same duration as the first phone
+in *weatherman*.
+*Most* importantly, the total duration of the words are exactly equal.
+
+```{r target-duration-morph-plot}
+#| fig-height: 4
+
+
+target_durations_df |> 
+  # keep this filter for debug mode
+  filter(file %in% c("northerner_01_LHH_001", "weatherman_01_LHH_001")) |>
+  mutate(label_position = 7.5) |> # rep(c(7, 7.5), times = ceiling(n()/2))[-1]) |> 
+  ggplot(aes(xmin = phone_start,
+             xmax = phone_end,
+             ymin = 1.5,
+             ymax = 3,
+             group = utterance)) +
+  # Plot the "textgrid" for the source file
+  geom_rect(fill = 'white', color = 'black') +
+  geom_text(aes(label = phone_label,
+                y = 1,
+                x = (phone_start+phone_end)/2)) +
+  # Plot the "textgrid" for the standardized durations
+  geom_rect(aes(xmin = target_start,
+                xmax = target_end,
+                ymin = 4.5,
+                ymax = 6,
+                group = utterance),
+            fill = 'white', 
+            color = 'firebrick') +
+  geom_text(aes(label = phone_label,
+                y = 6.7,
+                x = (target_start+target_end)/2),
+            color = 'firebrick') +
+  # Plot the multiplier for how much each section changed
+  geom_text(aes(label = round(change_multiplier, 2),
+                y = label_position,
+                x = (target_start+target_end)/2),
+            color = 'firebrick') +
+  # Draw the connecting lines between the textgrids
+  geom_segment(aes(x = phone_start,
+                   xend = target_start,
+                   y = 3,
+                   yend = 4.5)) +
+  geom_segment(data =
+                 target_durations_df |> 
+                 # keep this filter for debug mode
+                 filter(file %in% c("northerner_01_LHH_001",
+                                    "weatherman_01_LHH_001")) |>
+                 group_by(file) |> 
+                 slice_tail(),
+               aes(x = phone_end,
+                   xend = target_end,
+                   y = 3,
+                   yend = 4.5)) +
+  facet_wrap(~file, scales = 'free_x') +
+  ylim(c(.5,8)) +
+  xlab("Timepoint") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(size = .25),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank()) 
+```
