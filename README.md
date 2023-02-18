@@ -1,3 +1,32 @@
+This repository contains the code to create the stimuli used in my dissertation work.
+On github, only code and documentation is available.
+On the OSF, all materials (including audio files) are available.
+
+For the reader, the most relevant files to read will be:
+
+ - README.md
+ - Writeups/flowchart.qmd and its output
+
+For R coder, the most relevant files are in
+
+ - _targets.R
+ - Writeups/*.qmd
+ - Helpers/*.R
+
+For the phonetician, the most relevant files are in
+
+ - Helpers/bezier_helpers.R
+ - Helpers/syllable_helpers.R
+ - Helpers/tcog_helpers.R
+ - Helpers/tiermanips_helpers.R
+ - Helpers/resynthesis_helpers.R
+ - Scripts/ (contains all praat scripts used)
+ - Writeups/midphon_figures.qmd
+ - Writeups/resynthesis_analysis.qmd
+ - Writeups/spectral_measures_analysis.qmd
+ - Writeups/tcog_figures.qmd
+ - Writeups/
+
 ## Prerequisites and Important Notes
  - Must install montreal forced aligner in a conda environment named `aligner`.
  - Should download the US MFA dictionary and acoustic files and add to Scripts 
@@ -32,17 +61,21 @@ File format as follows:
  - 06c: branning_01_HHH_010_1_1 = [utteranceID]_[version/session#]_[originaltune]_[take]_[Alignmentval]_[BTval] 
  (-CURVED directroy uses curved onglides, the other uses straight lines)
  
-Note that creating the stimuli for all of these experiments happened
+Takes are given WITHIN THE SESSION. Take counting restarts with each session.
+
+### Note on naming
+ 
+Creating the stimuli for all of these experiments happened
 *months before the experiments were run*.
 In between this time the numbering changed and some versions were not run.
 Additionally, experiments are numbered differently in different conference
-proceedings.
+proceedings but removing and renaming everything is a huge pain and not worth 
+the time. 
+Please refer to this document and the flowchart for which experiment is which.
 E.g., Experiment 2 for **redacted** is Experiment 1 in **redacted**.
 Where the term *bottomout* is mentioned, this refers to an early fall
 instead of a gradual fall.
 
-
-Takes are given WITHIN THE SESSION. Take counting restarts with each session.
 
 ## Forced Aligner
 Usage Notes:
@@ -100,6 +133,14 @@ that are used with different functions throughout the project.
  in the project directory
  
 ## Directories
+
+For the sake of efficiency I do not include the hours-long original recording
+sessions or the mono-converted files.
+I include the Possible Recordings directory since they're used in
+various calculations that affect downstream targets; it's less work for me
+to just include them.
+Truthfully, you probably don't need to investigate anything besides
+the final files in directory 10.
 
 Stimulus-related directories:
 
@@ -203,12 +244,5 @@ really used.
  - resynthesis_analysis: Generates figures for spot-checking the resynthesized
  files. Parameterized for each experiment.
  - spectral_measures_analysis: Exploratory data analysis for spectral measures.
- - retainers: Deprecated chunks that I haven't fully deleted yet
+ - retainers: Deprecated chunks that I haven't fully deleted yet, ignore
  
- 
-## Python/MFA notes
- 
- 
- Refer to [https://eleanorchodroff.com/tutorial/montreal-forced-aligner.html](this tutorial) for installing the MFA.
- If using Anaconda on windows, be sure to set the `Anaconda3/` and `Anaconda3/Scripts` directories
- to your PATH environment variable (the latter is what lets you use the `conda` command).
