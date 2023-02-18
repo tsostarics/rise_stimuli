@@ -155,6 +155,7 @@ ggsave("MidphonFigs/f0_plot.pdf",
 # Spectral measures
 
 ```{r}
+tar_load(render_spectral_measures)
 spectral_measures <- 
   read_csv("FullSpectralMeasures/spectral_measures.txt") |> 
   rename(file = Filename,

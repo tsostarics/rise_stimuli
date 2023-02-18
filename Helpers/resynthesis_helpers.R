@@ -45,8 +45,9 @@ run_resynthesis <- function(wav_fromDir,
   for (filedir in c(wav_outDir, tg_outDir, pt_outDir)){
     if (!dir.exists(filedir)) {
       message("Creating ", filedir)
-    }
+      
       dir.create(filedir)
+    }
   }
   
   # If this is running anew, we need to clear out all old files

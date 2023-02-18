@@ -17,6 +17,8 @@ library(rPraat)
 library(sosprosody)
 library(tidyverse)
 library(targets)
+library(here)
+tar_dependency <- tar_read(render_EDA)
 ```
 
 ## Recording and Setup
@@ -33,11 +35,18 @@ TriggerScript[[trigger2tg.praat]]
 ExtractTakes[[extract_takes.praat]]
 MFA[[force_align.sh]]
 PitchTierScript[[gen_manips_pitchtier.praat]]
+PraatSauce[[praatsauce.praat]]
+SpectralAnalysis[[spectral_measures_analysis.qmd]]
+MidPhonFigs[[midphon_figures.qmd]]
 
 class TriggerScript praat
 class ExtractTakes praat
 class MFA shell
 class PitchTierScript praat
+class PraatSauce praat
+class SpectralAnalysis rstats
+class MidPhonFigs rstats
+
 
 %% Define Directories
 RawRec["📂00: Recordings"]
@@ -53,6 +62,9 @@ RawRec -- Extract mono channel --> TriggerScript --> MonoRec
     ExtractTakes --> PossibleRecs
     PossibleRecs --> MFA -- Standardized textgrid annotations --> Textgrids
     PossibleRecs --> PitchTierScript --> PitchTiers
+    
+PossibleRecs -- Extract Spectral Measures --> PraatSauce
+  PraatSauce --> SpectralAnalysis --> MidPhonFigs
     
 ```
 
@@ -173,10 +185,11 @@ and syllable interval tiers:
 
 
 ```{r}
-tg.read("03_ChosenRecordings/FixedTextGrids/branning_01_HLL_002.TextGrid", 
+tg.read(here::here("03_ChosenRecordings/FixedTextGrids/branning_01_HLL_002.TextGrid"), 
         'auto')
 ```
 
+::: {.column-screen-inset-right}
 
 ```{mermaid}
 flowchart LR
@@ -214,8 +227,11 @@ class PromoScript python
     average --> GetDurTiers
 ```
 
+:::
 
 ## Duration manipulations
+
+::: {.column-screen-inset-right}
 
 ```{mermaid}
 flowchart TD
@@ -259,6 +275,7 @@ EDA(Summary statistics & EDA with raw files)
     DurationScript2 --> NudgedFiles & NudgedTextGrids
 ```
 
+:::
 
 Once the chosen recordings are selected and their textgrids checked, a second
 round of averaging on the syllable level is done.
@@ -276,7 +293,7 @@ Thus, we see that for this recording, the first syllable needed to be stretched 
 
 ```{r}
 durationtier <- 
-  dt.read("03_ChosenRecordings/DurationTiers/branning_01_HLL_002.DurationTier")
+  dt.read(here::here("03_ChosenRecordings/DurationTiers/branning_01_HLL_002.DurationTier"))
 
 class(durationtier)['type'] <- "PitchTier"
 
@@ -299,6 +316,8 @@ When listening to the final resynthesis, it seems like 85% or 80% works best.
 
 ## Resynthesis
 
+::: {.column-screen-inset-right}
+
 ```{mermaid}
 
 flowchart TB
@@ -307,26 +326,39 @@ classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
 classDef rstats fill:#6FA1D0,stroke:#245AAB,color:#ffffff;
 classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
 
-Exp1ResynthScript[[resynthesize_continua.praat]]
-Exp2ResynthScript[[resynthesize_continua_exp2.praat]]
+Exp1ResynthScript[[resynthesize_exp1.praat]]
+Exp2ResynthScript[[resynthesize_exp2.praat]]
 Exp3ResynthScript[[resynthesize_straight_alignment_continua.praat]]
-Exp3cResynthScript[[resynthesize_curved_alignment_continua.praat]]
+Exp3cResynthScript[[resynthesize_exp3_curved.praat]]
+Exp1dResynthScript[[resynthesize_monotonal_bottomout.praat]]
+Exp2dResynthScript[[resynthesize_LHS_bottomout.praat]]
+Exp3dResynthScript[[resynthesize_bitonal_bottomout.praat]]
 ResynthAnalysis[[resynthesis_analysis.qmd]]
 BezierHelpers[[bezier_helpers.R]]
+TcogFigures[[tcog_figures.qmd]]
+
 
 class Exp1ResynthScript praat
 class Exp2ResynthScript praat
 class Exp3ResynthScript praat
 class Exp3cResynthScript praat
+class Exp1dResynthScript praat
+class Exp2dResynthScript praat
+class Exp3dResynthScript praat
 class ResynthAnalysis rstats
 class BezierHelpers rstats
+class TcogFigures rstats
+
 
 AvgFiles["📂05: Nudged Recordings"]
-Exp1Resynth["📂06: Exp1 Resynthesized Recordings"]
-Exp2Resynth["📂06b: Exp1 Resynthesized Recordings"]
-Exp3Resynth["📂06c: Exp1 Resynthesized Recordings"]
-Exp3cResynth["📂06cCurved: Exp1 Resynthesized Recordings"]
-FixedFiles["📂07: Manually fixed Recordings"]
+Exp1Resynth["📂06: Exp1"]
+Exp2Resynth["📂06b: Exp2"]
+Exp3Resynth["📂06c: Exp3"]
+Exp3cResynth["📂06cCurved: Exp3 Curved"]
+Exp1dResynth["📂06d: Monotonal Bottomout"]
+Exp2dResynth["📂06d: LHS Curved Bottomout"]
+Exp3dResynth["📂06d: Bitonal Curved Bottomout"]
+FixedFiles["📂07: Reduced Recordings"]
  
 subgraph Resynthesis[Resynthesis]
   direction LR
@@ -335,23 +367,30 @@ subgraph Resynthesis[Resynthesis]
     Exp1ResynthScript ---
       Exp2ResynthScript ---
       Exp3ResynthScript ---
-      Exp3cResynthScript
+      Exp3cResynthScript ---
+      Exp1dResynthScript ---
+      Exp2dResynthScript ---
+      Exp3dResynthScript
   end
   subgraph ResynthFiles[Resynthesized Files]
     direction TB
     Exp1Resynth ---
     Exp2Resynth ---
     Exp3Resynth ---
-    Exp3cResynth
+    Exp3cResynth ---
+    Exp1dResynth ---
+    Exp2dResynth ---
+    Exp3dResynth
   end
   BezierHelpers -- Create curves --> ResynthScripts
   ResynthScripts --> ResynthFiles
 end
 AvgFiles --> Resynthesis
-Resynthesis --> ResynthAnalysis
-ResynthAnalysis --> ResynthViz[Visualizations and Scripts for resynthesis debugging]
-ResynthViz -- Check for resynthesis errors --> FixedFiles
+Resynthesis --> ResynthAnalysis & TcogFigures
+ResynthAnalysis -- Cull recordings -->  FixedFiles
 ```
+
+:::
 
 We can now resynthesize all of the averaged recordings.
 The `resynthesis_analysis.qmd` provides visualizations of the resynthesized
@@ -359,31 +398,31 @@ files to double check that the resynthesis held. Sometimes rerunning the
 resynthesis on the file is good enough, but sometimes there's a voice quality
 issue at play.
 
-### Experiment 1
+### Resynthesis Manipulations
 
-This experiment uses the `Scripts/resynthesize_continua.praat` script, and
-the output is saved in `06_ResynthesizedRecordings`
+Here, "straight" means non-curved onglides and "gradual" means linear trajectories
+to the boundary tone target.
+The latter contrasts with "bottomout" which has an additional low target to
+create an early fall.
 
-### Experiment 2
-
-This experiment uses the `Scripts/resynthesize_alignment_continua_exp2.praat`
-script, and the output is saved in `06b_ResynthesizedRecordingsExp2`. 
-
-### Experiment 3
-
-There are two versions: 
-
- - `Scripts/resynthesize_straight_alignment_continua.praat` will give straight-line
- interpolations for a continuum of bitonal pitch accents that differ in alignment.
- Files saved in `06c_ResynthesizedRecordingsExp3`
- - `Scripts/resynthesize_curved_alignment_continua.praat` uses bezier curves to create
- curved interpolations for the onglides, but the trajectory from the peak to
- the boundary tone is still a straight line. Files saved in 
- `06c_ResynthesizedRecordingsExp3CURVED`
+ - Exp 1= Monotonal-Gradual. Uses `Scripts/resynthesize_continua.praat`, 
+ output saved in `06_ResynthesizedRecordings`
+ - Exp 2= LHS-Straight-Gradual. Uses  `Scripts/resynthesize_alignment_continua_exp2.praat`,
+ output in `06b_ResynthesizedRecordingsExp2`.
+ - Exp 3 = Bitonal-Straight-Gradual. Uses `Scripts/resynthesize_straight_alignment_continua.praat`,
+  output in `06c_ResynthesizedRecordingsExp3`.
+ - Exp3CURVED = Bitonal-Curved-Gradual. Uses `Scripts/resynthesize_exp3_curved.praat`, 
+ output in `06c_ResynthesizedRecordingsExp3CURVED`
+ - BottomoutMonotonal = Monotonal-Bottomout. Uses `Scripts/resynthesize_monotonal_bottomout`,
+ output in `06d_ResynthesizedRecordingsBottomoutMonotonal`
+ - BottomoutLHS = LHS-Curved-Bottomout. Uses `Scripts/resynthesize_LHS_bottomout`,
+ output in `06d_ResynthesizedRecordingsBottomoutLHS`
+ - BottomoutBitonal = Bitonal-Curved-Bottomout. uses `Scripts/resynthesize_bitonal_bottomout`,
+ output in `06d_ResynthesizedR
 
 ## Final Normalization Procedures
 
-```{mermaid}
+```{mermaid postprocessing-chart}
 flowchart TD
 classDef praat fill:#E46E85,stroke:#85144b,color:#ffffff;
 classDef python fill:#366994,stroke:#FFC331,color:#FFC331;
@@ -392,22 +431,22 @@ classDef shell fill:#111111,stroke:#2ECC40,color:#ffffff;
 
 SilenceNormScript[[norm_silence.praat]]
 RMSNormScript[[rms_norm.praat]]
-FinalEDA[[stimuli_analyses.qmd]]
+lame[[lame.exe]]
 
 class SilenceNormScript praat
 class RMSNormScript praat
-class FinalEDA rstats
+class lame shell
 
-FixedFiles["📂06: Manually fixed Recordings"]
-SilNormed["📂07: Silence Duration Normed Recordings"]
-FinalFiles["📂08: Final Recordings"]
-Cull["📂09: Culled Recordings"]
+FixedFiles["📂07: Reduced Recordings"]
+SilNormed["📂08: Silence Duration Normed Recordings"]
+RMS["📂09: RMS Normed Recordings"]
+FinalFiles["📂10: Final Recordings"]
+
 
 FixedFiles -- Norm Silence Durations --> SilenceNormScript --> SilNormed
-    SilNormed -- RMS Norm  Intensity --> RMSNormScript --> FinalFiles
-    FinalFiles -- Choose subset of files --> Cull
-    FinalStats([Plots and Statistics of final stimuli])
-    Cull --> FinalEDA --> FinalStats
+    SilNormed -- RMS Norm  Intensity --> RMSNormScript --> RMS
+    RMS -- Convert to MP3 --> lame
+    lame --> FinalFiles
 ```
 
 # Automation
@@ -418,7 +457,7 @@ Automation is done via the `{targets}` R package, which provides makefile-like f
 You can see the flowchart for the automated steps below, which reruns a target whenever an upstream dependency is modified (eg new file, removed file, edited file).
 Through this, we don't have to worry bout rerunning specific scripts in a specific order.
 
-```{r}
+```{r targets-display}
 tar_glimpse(targets_only = TRUE)
 ```
 

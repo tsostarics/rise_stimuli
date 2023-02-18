@@ -1,7 +1,21 @@
-Prerequisites:
- - Must install montreal forced aligner in a conda environment
+## Prerequisites and Important Notes
+ - Must install montreal forced aligner in a conda environment named `aligner`.
  - Should download the US MFA dictionary and acoustic files and add to Scripts 
    directory
+   
+### Forced aligner/Python
+ If you really want to re run the montreal forced aligner on the original recordings,
+ I've retained that functionality in uploaded versions of this project.
+ If you don't want to rerun it, make sure the `RERUN_MFA` flag in `_targets.R`
+ is set to `FALSE`.
+ I would recommend skipping the MFA so that you don't have to deal with
+ any Python/Anaconda shenanigans.
+
+### Occasional issues with rendering quarto docs
+
+Sometimes quarto documents won't build for me when using `tar_make_future`;
+if this is happening for you I would recommend trying `tar_make` for
+building those targets once the upstream dependencies are finished.
 
 ## Organization
 File format as follows:
@@ -18,18 +32,28 @@ File format as follows:
  - 06c: branning_01_HHH_010_1_1 = [utteranceID]_[version/session#]_[originaltune]_[take]_[Alignmentval]_[BTval] 
  (-CURVED directroy uses curved onglides, the other uses straight lines)
  
+Note that creating the stimuli for all of these experiments happened
+*months before the experiments were run*.
+In between this time the numbering changed and some versions were not run.
+Additionally, experiments are numbered differently in different conference
+proceedings.
+E.g., Experiment 2 for **redacted** is Experiment 1 in **redacted**.
+Where the term *bottomout* is mentioned, this refers to an early fall
+instead of a gradual fall.
+
 
 Takes are given WITHIN THE SESSION. Take counting restarts with each session.
 
 ## Forced Aligner
 Usage Notes:
  - Must run `conda init bash` and then `conda activate aligner` before running
-   Scripts/force_align.sh
- - Scripts/force_align.sh should be run from the Recordings directory
+   `Scripts/force_align.sh`
+ - `Scripts/force_align.sh` should be run from the Recordings directory
 
 The following words were out of vocabulary for the english_us_mfa dictionary.
 Provided below are the entries with their phonetic transcriptions.
-These lines should be copy-pasted into the english_us_mfa.dict file
+These lines should be copy-pasted into the `english_us_mfa.dict` file
+(they've already been added in the version here)
 
 weatherman	1.0	0.99	0.0	0.0	w ɜ ð ɚ m æ n
 
@@ -46,7 +70,7 @@ greenview	1.0	0.99	0.0	0.0	ɟ ɹ i n vʲ ʉː
  - Note that the 2nd float for these words is .99 because in our corpus it is
    always the last word in an utterance, hence the probability of silence
    following the word will be 1.0, but if you make it exactly 1 python will
-   throw an error when trying to execute math.log(1-silence_after_probability). 
+   throw an error when trying to execute `math.log(1-silence_after_probability)`. 
    
 ## Top-level files:
 
@@ -79,8 +103,8 @@ that are used with different functions throughout the project.
 
 Stimulus-related directories:
 
- - 00_Raw: Raw recordings
- - 01_Mono: Mono recordings with textgrids
+ - 00_Raw: Raw recordings (*not included in OSF uploads*)
+ - 01_Mono: Mono recordings with textgrids (*not included in OSF uploads*)
  - 02_PossibleRecordings: Selected recordings that are okay enough for further
  analysis. Contains wav files, montreal forced aligned textgrids, pitchtiers, and 
  spectral measures.
@@ -104,6 +128,13 @@ Stimulus-related directories:
  continua for L\*+H\* to L\*+H. This one uses straight line interpolations
  for the accent onglides.
  - 06cCURVED: Same as 06c, but the onglide is curved.
+ - 07_ReducedRecordings: Previous recordings used a variety of source files,
+ this directory only contains the resynthesized files using the 70% duration
+ manipulation with HLL source files.
+ - 08_SilenceNormedRecordings: Contains files with the leading/trailing silence
+ durations standardized
+ - 09_RMSNormedRecordings: Contains files after RMS norming the files
+ - 10_FinalFiles: Contains the final mp3 files used in the online experiments.
  
 Non-stimulus related directories:
 
@@ -124,36 +155,42 @@ Non-stimulus related directories:
  
 ## Praat scripts
 
- - praatsauce: Directory containing praatsauce files for spectral measurement
+ - `praatsauce/`: Directory containing praatsauce files for spectral measurement
  extraction
- - apply_dt_manipulation.praat: Applies duration tier manipulations
- - draw.praat: Draws multiple sound files and a textgrid to the praat window.
+ - `apply_dt_manipulation.praat`: Applies duration tier manipulations
+ - `draw.praat`: Draws multiple sound files and a textgrid to the praat window.
  **Manual execution only**
- - extract_takes.praat: Extracts labeled intervals into their own wav files,
+ - `shellDraw.praat`: Draws multiple soundfiles and a textgrid to the praat window.
+ **Shell execution only**
+ - `extract_takes.praat`: Extracts labeled intervals into their own wav files,
  used to create the files in 02_PossibleRecordings
- - gen_manips_pitchtiers.praat: Creates pitchtiers and/or manipulations for
+ - `gen_manips_pitchtiers.praat`: Creates pitchtiers and/or manipulations for
  all files in a directory, for when I need the pitchtiers saved to disk.
- - INSTALL.praat: Used for installing vocal toolkit only
- - intensity_norm.praat: Norms all files in a directory to the given intensity
- - resynthesize_continua.praat: Creates the continua for Exp 1 (06)
- - resynthesize_alignment_continua3.praat: Creates the continua for Exp 3 with
+ - `INSTALL.praat`: Used for installing vocal toolkit only
+ - `intensity_norm.praat`: Norms all files in a directory to the given intensity
+ - `resynthesize_continua.praat`: Creates the continua for Exp 1 (06)
+ - `resynthesize_alignment_continua3.praat`: Creates the continua for Exp 3 with
  straight lines (06c)
- - resynthesize_alignment_continua4.praat: Creates the continua for Exp3 with
+ - `resynthesize_alignment_continua4.praat`: Creates the continua for Exp3 with
  curved lines (06cCURVED)
- - resynthesize_alignment_continua_exp2: Creates the continua for Exp 2 (06b)
- - save_nuclear_regions.praat: Saves timestamps for the nuclear regions given
+ - `resynthesize_alignment_continua_exp2`: Creates the continua for Exp 2 (06b)
+ - `save_nuclear_regions.praat`: Saves timestamps for the nuclear regions given
  a textgrid
- - tg2sepfiles.praat: Extracts textgrid to separate files, not used though. Was
+ - `tg2sepfiles.praat`: Extracts textgrid to separate files, not used though. Was
  used as a reference for extract_takes.praat
- - trigger2tg.praat: Northwestern's script for extracting files from presentation
+ - `trigger2tg.praat`: Northwestern's script for extracting files from presentation
  software
+
 
 ### Other scripts and files
 
-The .zip, .dict, .log files in the Scripts directory are for the montreal
-forced aligner; force_align.sh runs the forced aligner.
-bezierpoints.csv is used for the curved onglide resynthesis scripts; this is
-automatically generated as part of the targets pipeline.
+
+ - lame.exe: mp3 codec
+ - lame_enc.dll: mp3 codec 
+ - The .zip, .dict, .log files in the Scripts directory are for the montreal forced aligner
+ - force_align.sh: runs the forced aligner.
+ - bezierpoints.csv:  used for the curved onglide resynthesis scripts; this is automatically generated as part of the targets pipeline.
+ 
 The csv files have information about the resynthesis parameters but aren't
 really used.
 
@@ -167,3 +204,11 @@ really used.
  files. Parameterized for each experiment.
  - spectral_measures_analysis: Exploratory data analysis for spectral measures.
  - retainers: Deprecated chunks that I haven't fully deleted yet
+ 
+ 
+## Python/MFA notes
+ 
+ 
+ Refer to [https://eleanorchodroff.com/tutorial/montreal-forced-aligner.html](this tutorial) for installing the MFA.
+ If using Anaconda on windows, be sure to set the `Anaconda3/` and `Anaconda3/Scripts` directories
+ to your PATH environment variable (the latter is what lets you use the `conda` command).

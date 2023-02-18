@@ -36,4 +36,3 @@ process_syllable_tiers <- function(chosen_files,
     stop("Error with write scaling files")
   return("04_ScaledRecordings/TextGrids/")
 }
-
