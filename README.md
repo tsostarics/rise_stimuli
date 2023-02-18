@@ -25,7 +25,14 @@ For the phonetician, the most relevant files are in
  - Writeups/resynthesis_analysis.qmd
  - Writeups/spectral_measures_analysis.qmd
  - Writeups/tcog_figures.qmd
- - Writeups/
+
+For the sake of efficiency I do not include the hours-long original recording
+sessions or the mono-converted files.
+I include the Possible Recordings directory since they're used in
+various calculations that affect downstream targets; it's less work for me
+to just include them.
+Truthfully, you probably don't need to investigate anything besides
+the final files in directory 10.
 
 ## Prerequisites and Important Notes
  - Must install montreal forced aligner in a conda environment named `aligner`.
@@ -134,13 +141,6 @@ that are used with different functions throughout the project.
  
 ## Directories
 
-For the sake of efficiency I do not include the hours-long original recording
-sessions or the mono-converted files.
-I include the Possible Recordings directory since they're used in
-various calculations that affect downstream targets; it's less work for me
-to just include them.
-Truthfully, you probably don't need to investigate anything besides
-the final files in directory 10.
 
 Stimulus-related directories:
 
