@@ -7,7 +7,7 @@ For the reader, the most relevant files to read will be:
  - README.md
  - Writeups/flowchart.qmd and its output
 
-For R coder, the most relevant files are in
+For the R coder, the most relevant files are in
 
  - _targets.R
  - Writeups/*.qmd
@@ -34,10 +34,29 @@ to just include them.
 Truthfully, you probably don't need to investigate anything besides
 the final files in directory 10.
 
+
 ## Prerequisites and Important Notes
  - Must install montreal forced aligner in a conda environment named `aligner`.
  - Should download the US MFA dictionary and acoustic files and add to Scripts 
    directory
+
+## Running the pipeline
+
+Open the .rproj file, then run the pipeline by doing:
+
+```r
+library(targets)
+tar_make()
+```
+
+You can also use `tar_make_future(workers = n)` where n is the number of
+cores you would like to offer up.
+I've commented out the spectral measures targets, the output is available
+in FullSpectralFiles. The target has a tendency to hang, preventing
+others from executing in the process. If you want to regenerate
+that analysis, you can run those targets manually.
+Otherwise, the whole pipeline takes me about 9 minutes to run from
+start to finish using a 10 core machine.
    
 ### Forced aligner/Python
  If you really want to re run the montreal forced aligner on the original recordings,

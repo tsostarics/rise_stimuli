@@ -131,7 +131,7 @@ list(
   tar_target(tune_order, c("LHH","HHH","HLL","LHSLL","LSHLL")),
   tar_target(textgrid_df,
              command = 
-               tar_read("process_textgrids") |> 
+               process_textgrids |> 
                mutate(is_nuclear = word_label %in% nuclear_words,
                       wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2"))),
   tar_target(files_to_omit, command = check_pronunciations(textgrid_df)),
@@ -148,32 +148,31 @@ list(
              }),
   tar_quarto(render_EDA, 
              path = "Writeups/raw_recordings_eda.qmd",
-             extra_files = c("02_PossibleRecordings/",
-                             "Helpers/EDA_helpers.R",
-                             "Helpers/pitcherror_helpers.R"),
-             deployment = 'worker'),
+             deployment = 'main'),
   tar_quarto(render_flowchart,
              path = "Writeups/flowchart.qmd",
-             deployment = 'worker'),
-  tar_target(get_all_spectral_measures,
-             command = {
-               get_dir_spectral_measures(
-                 wavfile_from = "02_PossibleRecordings",
-                 tg_from = "02_PossibleRecordings/MFA_textgrids",
-                 tg_to = "02_PossibleRecordings/SpectralMeasuresTextgrids",
-                 rewrite_tg = TRUE,
-                 use_existing = FALSE)
-               
-               return(0)
-             }),
-  tar_quarto(render_spectral_measures,
-             path = "Writeups/spectral_measures_analysis.qmd",
-             extra_files = "02_PossibleRecordings/SpectralMeasuresTextgrids/spectral_measures.txt",
-             deployment = 'worker'),
+             deployment = 'main'),
+  # Uncomment these to try to rerun the spectral measure extraction with
+  # praatsauce, but this has a tendency to hang and not execute completely.
+  # I usually end up just rerunning this one manually.
+  # tar_target(get_all_spectral_measures,
+  #            command = {
+  #              get_dir_spectral_measures(
+  #                wavfile_from = "02_PossibleRecordings",
+  #                tg_from = "02_PossibleRecordings/MFA_textgrids",
+  #                tg_to = "02_PossibleRecordings/SpectralMeasuresTextgrids",
+  #                rewrite_tg = TRUE,
+  #                use_existing = FALSE)
+  #              
+  #            }),
+  # tar_quarto(render_spectral_measures,
+  #            path = "Writeups/spectral_measures_analysis.qmd",
+  #            extra_files = "02_PossibleRecordings/SpectralMeasuresTextgrids/spectral_measures.txt",
+  #            deployment = 'main'),
   tar_quarto(render_midphon_figures,
              path = "Writeups/midphon_figures.qmd",
              extra_files = "FullSpectralMeasures/spectral_measures.txt",
-             deployment = 'worker'),
+             deployment = 'main'),
   tar_target(chosen_files,
              command = {
                render_EDA
@@ -197,8 +196,6 @@ list(
              "syllabification.csv",
              format = 'file'),
   tar_target(syllable_specification, read_csv(syllabification_spreadsheet)),
-  # TODO: on next opportunity to improve this section, wrap these next few
-  #       targets into syllable_helpers.R
   tar_target(syllable_durations,
              command =
                get_syllable_durations(avg_phone_durations, 
@@ -250,7 +247,7 @@ list(
              priority = .90,
              resources =tar_resources(future = 
                                         tar_resources_future(
-                                          resources = list(num_cores=N_CORES))), # TODO: set default cores
+                                          resources = list(num_cores=N_CORES))),
              pattern = map(apply_dt_nudges)),
   tar_target(make_nuclear_regions,
              command = {
@@ -277,6 +274,7 @@ list(
   tar_quarto(render_resynthesis_analysis,
              pandoc_args = "-o exp1_avg_resynth.html",
              path = "Writeups/resynthesis_analysis.qmd",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "exp1_avg_resynth",
                                       full.names = TRUE)),
@@ -295,7 +293,7 @@ list(
              priority = .3,
              resources =tar_resources(future = 
                                         tar_resources_future(
-                                          resources = list(num_cores=N_CORES))), # TODO: set cores
+                                          resources = list(num_cores=N_CORES))), 
              pattern = map(apply_dt_nudges)),
   tar_target(exp3_make_nuclear_regions,
              command = 
@@ -318,6 +316,7 @@ list(
   tar_quarto(exp3_render_resynthesis_analysis,
              pandoc_args = "-o exp3_avg_resynth.html",
              path = "Writeups/resynthesis_analysis.qmd",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "exp3_avg_resynth",
                                       full.names = TRUE),
@@ -349,14 +348,14 @@ list(
              }),
   tar_target(exp3curved_resynthesize_files,
              command = {
+               exp3_bezier_points
                run_resynth_target(apply_dt_nudges,
                                   tar_resynth_script = exp3curved_resynthesis_praatscript,
                                   hyp_nsteps = hyp_nsteps,
                                   input_dir = apply_dt_nudges[['dir']],
                                   outdir_pattern = "06c_ResynthesizedRecordingsExp3CURVED/ConstantScaling_",
-                                  hyp_nalignment = hyp_nalignment,
-                                  hyp_nbezier = hyp_nbezier,
-                                  exp3_bezier_points)
+                                  nAlignmentSteps = hyp_nalignment,
+                                  nBezierPoints = hyp_nbezier)
              },
              priority = .3,
              resources =tar_resources(future = 
@@ -384,6 +383,7 @@ list(
   tar_quarto(exp3curved_render_resynthesis_analysis,
              path = "Writeups/resynthesis_analysis.qmd",
              pandoc_args = "-o exp3curved_avg_resynth.html",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "exp3curved_avg_resynth",
                                       full.names = TRUE),
@@ -419,12 +419,12 @@ list(
                                   hyp_nsteps = hyp_nsteps,
                                   input_dir = apply_dt_nudges[['dir']],
                                   outdir_pattern = "06b_ResynthesizedRecordingsExp2/ConstantScaling_",
-                                  hyp_nbezier = hyp_nbezier)
+                                  nBezierPoints = hyp_nbezier)
              },
              priority = .3,
              resources =tar_resources(future = 
                                         tar_resources_future(
-                                          resources = list(num_cores=N_CORES))), # TODO set cores
+                                          resources = list(num_cores=N_CORES))),
              pattern = map(apply_dt_nudges)),
   tar_target(exp2_make_nuclear_regions,
              command = 
@@ -452,7 +452,7 @@ list(
                                       full.names = TRUE),
              execute_params = list(exptag = "exp2", 
                                    nucpath = "06b_ResynthesizedRecordingsExp2/ConstantScaling_"),
-             deployment = 'worker'),
+             deployment = 'main'),
   ##################################################
   # Bottom-out resyntheses, only constantscaling_100
   tar_target(monotonal_bottomout_praatscript,
@@ -491,10 +491,11 @@ list(
                                               three_syl_words,
                                               exptag = "bottomoutMono"),
              pattern = map(monotonal_bottomout_resynthesize_files),
-             format = 'file'), # TODO: do this for every resynth target
+             format = 'file'), 
   tar_quarto(monotonal_bottomout_render_resynthesis_analysis,
              path = "Writeups/resynthesis_analysis.qmd",
              pandoc_args = "-o bottomoutMono_avg_resynth.html",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "bottomoutMono_avg_resynth",
                                       full.names = TRUE),
@@ -507,8 +508,8 @@ list(
                                   hyp_nsteps = hyp_nsteps,
                                   input_dir = bottomout_input_dir,
                                   outdir_pattern = "06d_ResynthesizedRecordingsBottomoutBitonal/ConstantScaling_",
-                                  hyp_nbezier = hyp_nbezier,
-                                  hyp_nalignment = hyp_nalignment),
+                                  nBezierPoints = hyp_nbezier,
+                                  nAlignmentSteps = hyp_nalignment),
              priority = .3,
              pattern = map(bottomout_input_dir)),
   tar_target(bitonal_bottomout_make_nuclear_regions,
@@ -534,6 +535,7 @@ list(
   tar_quarto(bitonal_bottomout_render_resynthesis_analysis,
              path = "Writeups/resynthesis_analysis.qmd",
              pandoc_args = "-o bottomoutBi_avg_resynth.html",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "bottomoutBi_avg_resynth",
                                       full.names = TRUE),
@@ -573,6 +575,7 @@ list(
   tar_quarto(LHS_bottomout_render_resynthesis_analysis,
              path = "Writeups/resynthesis_analysis.qmd",
              pandoc_args = "-o bottomoutLHS_avg_resynth.html",
+             deployment = 'main',
              extra_files = list.files("CalculatedFiles",
                                       pattern = "bottomoutLHS_avg_resynth",
                                       full.names = TRUE),
@@ -663,35 +666,42 @@ list(
   tar_quarto(exp1_render_tcog,
              pandoc_args = "-o exp1_tcog.html",
              path = "Writeups/tcog_figures.qmd",
+             deployment = 'main',
              execute_params = list(exptag = "exp1",
                                    nucpath = "06_ResynthesizedRecordings/ConstantScaling_")),
   tar_quarto(exp2_render_tcog,
              path = "Writeups/tcog_figures.qmd",
              pandoc_args = "-o exp2_tcog.html",
+             deployment = 'main',
              execute_params = list(exptag = "exp2",
                                    nucpath = "06b_ResynthesizedRecordingsExp2/ConstantScaling_")),
   tar_quarto(exp3curved_render_tcog,
              path = "Writeups/tcog_figures.qmd",
+             deployment = 'main',
              pandoc_args = "-o exp3curved_tcog.html",
              execute_params = list(exptag = "exp3curved",
                                    nucpath = "06c_ResynthesizedRecordingsExp3CURVED/ConstantScaling_")),
   tar_quarto(exp3straight_render_tcog,
              path = "Writeups/tcog_figures.qmd",
              pandoc_args = "-o exp3_tcog.html",
+             deployment = 'main',
              execute_params = list(exptag = "exp3",
                                    nucpath = "06c_ResynthesizedRecordingsExp3/ConstantScaling_")),
   tar_quarto(bottomout_monotonal_render_tcog,
              path = "Writeups/tcog_figures.qmd",
+             deployment = 'main',
              pandoc_args = "-o bottomoutMono_tcog.html",
              execute_params = list(exptag = "bottomoutMono",
                                    nucpath = "06d_ResynthesizedRecordingsBottomoutMonotonal/ConstantScaling_")),
   tar_quarto(bottomout_bitonal_render_tcog,
              path = "Writeups/tcog_figures.qmd",
+             deployment = 'main',
              pandoc_args = "-o bottomoutBi_tcog.html",
              execute_params = list(exptag = "bottomoutBi",
                                    nucpath = "06d_ResynthesizedRecordingsBottomoutBitonal/ConstantScaling_")),
   tar_quarto(bottomout_LHS_render_tcog,
              path = "Writeups/tcog_figures.qmd",
+             deployment = 'main',
              pandoc_args = "-o bottomoutLHS_tcog.html",
              execute_params = list(exptag = "bottomoutLHS",
                                    nucpath = "06d_ResynthesizedRecordingsBottomoutLHS/ConstantScaling_")),
