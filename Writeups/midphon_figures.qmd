@@ -63,6 +63,7 @@ raw_pitchtier_df <- tar_read("process_pitchtiers")
 # Preprocess pitchtracks
 pitchtier_df <- 
   raw_pitchtier_df  |> 
+  # dplyr::filter(utterance %in% c('branning', 'grandma')) |> 
   preprocess_pitchtracks(nuclear_regions, 
                          runmed_k = 5, 
                          time_normalize = TRUE,
@@ -75,14 +76,16 @@ avg_contour_df <-
   pitchtier_df |> 
   # Fix coding issue with points outside of final boundary
   mutate(is_nuclear = fix_OOB_nuclear_coding(is_nuclear),
+         idx = is_nuclear + 1,
          tune = factor(tune, levels = tune_order),
          wordset = ifelse(utterance %in% three_syl_words, "syl3", "syl2")) |>
   average_pitchtracks(section_by = "is_nuclear",
                       pulses_per_section = c("FALSE" = 15,
                                              "TRUE" = 30),
                       time_by = "timepoint_norm",
+                      index_column = 'idx',
                       aggregate_by = file ~ tune + wordset,
-                      parallelize = TRUE) |> 
+                      parallelize = FALSE) |> 
   # Smooth average points a little
   running_median_smooth(.k = 5, 
                         .from = "avg_hz",
@@ -104,12 +107,14 @@ plot_averaged_contours2 <- function(raw_pitchtier_df,
                                  23, 21)
   avg_pitchtier_df$fill <- ifelse(avg_pitchtier_df$is_nuclear == 'FALSE',
                                   "skyblue1", "lightcoral")
+                                  
   avg_pitchtier_df$stripname <- ifelse(avg_pitchtier_df$wordset == "syl3",
                                        "3 Syllables",
                                        "2 Syllables")
   raw_pitchtier_df$stripname <- ifelse(raw_pitchtier_df$wordset == "syl3",
                                        "3 Syllables",
                                        "2 Syllables")
+  
   ggplot(raw_pitchtier_df,
          aes(x = !!sym(.x), 
              y = !!sym(.y), 
@@ -137,10 +142,10 @@ plot_averaged_contours2 <- function(raw_pitchtier_df,
 
 f0_plot <- 
   plot_averaged_contours2(pitchtier_df,
-                                   avg_contour_df,
-                                   .x = 'timepoint_norm',
-                                   .yavg = "avg_hz",
-                                   .facet_by = tune ~ stripname) +
+                          avg_contour_df,
+                          .x = 'timepoint_norm',
+                          .yavg = "avg_hz",
+                          .facet_by = tune ~ stripname) +
   coord_fixed(ratio = 1/300) +
   xlab("Normalized Time") +
   ylab("Hz")
