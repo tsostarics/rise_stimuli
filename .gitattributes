@@ -1,0 +1,3 @@
+Writeups/*.html linguist-generated
+Writeups/**/libs/** linguist-generated
+praat.xml linguist-vendored
