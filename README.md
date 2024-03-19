@@ -1,6 +1,9 @@
+# Rising and Falling Resynthesis
+
 This repository contains the code to create the stimuli used in my dissertation work.
 On github, only code and documentation is available.
-On the OSF, all materials (including audio files) are available.
+On the OSF, the final audio stimuli are available for listening purposes only.
+Access to the raw .wav files used as input to the pipeline is restricted; please feel free to reach out if you are interested in a collaboration using the materials.
 
 For the reader, the most relevant files to read will be:
 
@@ -25,14 +28,6 @@ For the phonetician, the most relevant files are in
  - Writeups/resynthesis_analysis.qmd
  - Writeups/spectral_measures_analysis.qmd
  - Writeups/tcog_figures.qmd
-
-For the sake of efficiency I do not include the hours-long original recording
-sessions or the mono-converted files.
-I include the Possible Recordings directory since they're used in
-various calculations that affect downstream targets; it's less work for me
-to just include them.
-Truthfully, you probably don't need to investigate anything besides
-the final files in directory 10.
 
 
 ## Prerequisites and Important Notes
